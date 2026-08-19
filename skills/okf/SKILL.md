@@ -67,9 +67,10 @@ against docs here.
    ```
    Merge into any existing `hooks`/`PostToolUse` array. Pipe-test the raw
    command first (`echo '{"tool_name":"Bash","tool_input":{"command":"git commit -m x"}}' | <cmd>`),
-   then validate with
-   `jq -e '.hooks.PostToolUse[] | select(.matcher == "Bash") | .hooks[] | select(.if | contains("git commit"))' .claude/settings.json`.
-   Tell the user it's live and point them at `/hooks`.
+   then validate the written file — don't assume `jq` is on this machine —
+   with `python -c "import json; json.load(open('.claude/settings.json'))"`
+   (valid JSON) and `grep -c "git commit" .claude/settings.json` (the hook is
+   actually in there). Tell the user it's live and point them at `/hooks`.
 
 4. **Report:** bootstrapped or version-checked, the fetched spec version
    and whether the bundle's version moved, and whether the reminder was
