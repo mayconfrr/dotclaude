@@ -20,6 +20,13 @@ narrate the wrong turns taken to find it.
   step, and a closing note. State it once, where it's used.
 - **Meta-commentary about the skill itself** — how thorough or careful it
   is — rather than what to actually do.
+- **A project-specific fact stated as universal, in a global skill**
+  (`~/.claude/skills`, or a skill on claude.ai): a build directory's name, a
+  specific error message, a package manager's quirk — true for the project
+  the skill was written against, not for every project it will run
+  against. Generalize to the underlying principle, or cut it. A
+  project-scoped skill (`<project>/.claude/skills`) is exempt — project
+  facts are exactly what it's for.
 
 ## What to keep
 
@@ -32,13 +39,19 @@ narrate the wrong turns taken to find it.
 ## Procedure
 
 1. Read the skill file in full.
-2. For each paragraph: does it say what to do now, or how the skill came
+2. Note where it lives: global (`~/.claude/skills`, claude.ai) or
+   project-scoped (`<project>/.claude/skills`). Only global skills get
+   step 4's check.
+3. For each paragraph: does it say what to do now, or how the skill came
    to be? Narration fails even when true.
-3. For a "don't do X" warning: is X still a live temptation, or dead
+4. For a global skill, for each concrete fact or example: does it hold for
+   any project this skill might run against, or only the one it was
+   written against? Generalize the ones that don't, or cut them.
+5. For a "don't do X" warning: is X still a live temptation, or dead
    history? Keep only the former, and only as a rule, not a story.
-4. Merge duplicate instructions into their single best location; delete
+6. Merge duplicate instructions into their single best location; delete
    the rest.
-5. Re-validate frontmatter and structure after editing (skill-creator's
+7. Re-validate frontmatter and structure after editing (skill-creator's
    `quick_validate.py`, if available).
-6. Report what was cut and why — don't silently discard something the
+8. Report what was cut and why — don't silently discard something the
    user may have wanted kept.

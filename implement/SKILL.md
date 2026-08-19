@@ -144,10 +144,12 @@ Each dispatch gets its worktree path and `$WAVE_BASE`. Its review range is
 anything the other sibling also touched. Read a landed task's range from its
 branch ref instead; keep that ref until the run closes.
 
-Each worktree keeps its own `build/`: never shared, never hand-deleted. Each
-needs its own `node_modules` install — a missing one can block a commit that
-needs a pre-commit hook, and junctioning the whole tree from the feature
-worktree is a documented breakage risk for some frontend resolvers.
+Each worktree keeps its own build output: never shared, never hand-deleted.
+Each also needs its own dependency install — a missing one can block a
+commit that needs a pre-commit hook — and never symlinked or junctioned in
+from another worktree: that's a documented breakage risk for some
+dependency resolvers, and hand-deleting build output mid-run corrupts
+incremental build state.
 
 If the project has a `package.json` with a `package-lock.json` or
 `yarn.lock`, install per worktree with `pnpm` instead — it reads the same
@@ -334,6 +336,6 @@ oversight.**
 | "CI is flaky, re-run and move on" | A red check is a failure. Investigate it, or spend a round and say so in the handoff. |
 | "The ruling list is long, I'll summarize" | Summarizing is discarding. Exhaustive or it substitutes for nothing. |
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
-| "`build/` looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures fake `ClassNotFoundException`s. Clean via the build tool, or leave it. |
+| "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
 | "Both halves passed review, so the merge is a formality" | Independent reviews say nothing about the seam. Judge the merge itself, same as any other change. |
 | "I'll ask which base branch to use" | `origin/staging`, then `main`, then `master`. Report which resolved. |
