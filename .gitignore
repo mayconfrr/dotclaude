@@ -1,0 +1,11 @@
+# Deny-by-default: nothing is tracked unless explicitly allow-listed below.
+# ~/.claude holds credentials, session transcripts, and other sensitive
+# runtime state alongside the setup files this repo actually wants.
+/*
+
+!/.gitignore
+!/README.md
+!/CLAUDE.md
+!/settings.json
+!/.github/
+!/skills/

@@ -16,10 +16,11 @@ jobs:
       - name: Zip each skill into a .skill file
         run: |
           mkdir -p dist
-          for dir in */; do
+          for dir in skills/*/; do
             name="${dir%/}"
-            [ -f "$name/SKILL.md" ] || continue
-            (cd "$name" && zip -r "../dist/${name}.skill" . -x '.git*')
+            name="${name#skills/}"
+            [ -f "skills/$name/SKILL.md" ] || continue
+            (cd "skills/$name" && zip -r "../../dist/${name}.skill" . -x '.git*')
           done
           ls -la dist
 

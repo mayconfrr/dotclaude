@@ -27,7 +27,8 @@ written — do not re-derive it, do not soften it.
 | `superpowers:verification-before-completion` | before every claim | both |
 | `code-review` | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
-| `simplify` | end of Phase 4, before Phase 5 | controller |
+| `security-review` | end of Phase 4, before `simplify` | controller |
+| `simplify` | end of Phase 4, after `security-review` | controller |
 | `superpowers:finishing-a-development-branch` | Phase 5 | controller |
 | `superpowers:executing-plans` | never | — |
 | `superpowers:writing-skills` | never | — |
@@ -244,11 +245,12 @@ branch state.
 Two consecutive clean rounds close this phase; one alone isn't enough
 evidence.
 
-Once closed: invoke `simplify`, then one more `code-review` round on what
-it touched. A finding there opens its own fix-then-review loop, capped at
-**3 rounds** — separate from the budget above, since a cleanup pass has a
-narrower footprint to re-check. At round 3 with findings still open, hand
-over the same way.
+Once closed: invoke `security-review`, adjudicate its findings with the same
+fix-then-reverify discipline as the rounds above, then invoke `simplify`,
+then one more `code-review` round on what `simplify` touched. A finding
+there opens its own fix-then-review loop, capped at **3 rounds** — separate
+from the budget above, since a cleanup pass has a narrower footprint to
+re-check. At round 3 with findings still open, hand over the same way.
 
 ## Phase 5 — Finish and ship
 
@@ -257,7 +259,11 @@ terminal state follows the remote.
 
 **GitHub** (`gh repo view` succeeds, or `origin` matches github.com): take
 Option 2. The PR base is `${BASE#origin/}`. From an issue run, the body closes
-it (`Closes #384`).
+it (`Closes #384`). The body carries a `## Decisions` section: every ruling,
+from any phase, where more than one viable option existed and you picked one
+without asking — what you decided, why, what it costs if wrong. A mechanical
+step with no real alternative doesn't belong here; a genuine judgment call
+does, whether or not it turned out to matter.
 
 **Any other remote, or none:** take Option 3.
 
@@ -297,8 +303,9 @@ unresolved.
 
 ### Close out
 
-Include Phase 1 and 2 rulings in the Finish ruling list. The list is exhaustive
-or the run is unreviewable.
+Every Phase 1-4 ruling belongs in the PR body's `## Decisions` section, not
+only the ledger — a human reviewing the PR sees the PR, not a ledger deleted
+at Finish. Exhaustive or the run is unreviewable.
 
 ## Hard stops
 

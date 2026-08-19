@@ -1,7 +1,7 @@
-# claude-code-skills
+# dotclaude
 
-Personal [Claude Code](https://claude.com/claude-code) skills, kept here so they can be
-versioned, shared, and pulled into `~/.claude/skills` on any machine.
+Personal [Claude Code](https://claude.com/claude-code) setup — skills and global
+config — kept here so they can be versioned, shared, and pulled onto any machine.
 
 ## Skills
 
@@ -23,6 +23,17 @@ versioned, shared, and pulled into `~/.claude/skills` on any machine.
 
 Drop a skill's folder into `~/.claude/skills/<name>/` (global) or
 `<project>/.claude/skills/<name>/` (project-scoped) so Claude Code picks it up.
+
+## Global config
+
+`global-config/` mirrors select files from `~/.claude/` — the personal-setup
+ones, not session state, caches, or credentials (none of those are, or ever
+will be, in this repo). Currently: `CLAUDE.md` and `settings.json`.
+
+**`settings.json` runs with `permissions.defaultMode: "bypassPermissions"`** —
+every tool call executes with no confirmation prompt. That's a deliberate
+choice for this machine; copying this file elsewhere inherits that with it —
+know what it does before you do.
 
 ## Uploading to claude.ai
 
