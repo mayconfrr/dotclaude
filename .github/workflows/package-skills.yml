@@ -1,0 +1,35 @@
+name: Package skills
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zip each skill into a .skill file
+        run: |
+          mkdir -p dist
+          for dir in */; do
+            name="${dir%/}"
+            [ -f "$name/SKILL.md" ] || continue
+            (cd "$name" && zip -r "../dist/${name}.skill" . -x '.git*')
+          done
+          ls -la dist
+
+      - name: Publish rolling release with the .skill files
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest skill packages
+          body: >-
+            Auto-generated on every push to main. Download a `.skill` file
+            and upload it as-is to claude.ai (Settings → Skills → Create
+            skill) — despite the extension, it's a standard zip.
+          files: dist/*.skill
