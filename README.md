@@ -11,6 +11,14 @@ versioned, shared, and pulled into `~/.claude/skills` on any machine.
 | [`okf`](okf/SKILL.md) | Bootstraps a project's [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog) bundle, or keeps an existing one's declared spec version current. |
 | [`skill-audit`](skill-audit/SKILL.md) | Audits a skill file for prose that narrates its own development history instead of stating only the current, correct procedure. |
 
+## Prerequisites
+
+| Skill | Needs |
+|---|---|
+| `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.), the `code-review` and `simplify` skills, and the [`gh`](https://cli.github.com/) CLI. |
+| `okf` | Network access to fetch the spec; `jq` to validate the commit hook it installs. |
+| `skill-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
+
 ## Using a skill
 
 Drop a skill's folder into `~/.claude/skills/<name>/` (global) or
