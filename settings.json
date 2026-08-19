@@ -34,5 +34,17 @@
   "theme": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sed -n 's/.*\"transcript_path\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p' | { read -r tp; [ -n \"$tp\" ] && tail -c 50000 \"$tp\" 2>/dev/null | grep -qE '\"name\":\"(Edit|Write)\",\"input\":\\{\"file_path\":\"[^\"]*SKILL\\.md\"' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md file was edited this turn. Once every change to it is done, run skill-audit on it.\"}}'; }; true"
+          }
+        ]
+      }
+    ]
+  }
 }
