@@ -7,7 +7,7 @@ description: Use when asked to implement, build, fix, refactor, or ship a code c
 
 Drive a change from request to green pull request without stopping for approval.
 
-**Announce at start:** "Using implement to drive this end-to-end. I won't stop for approval — every decision I make on your behalf lands in the ruling list at the end."
+**Announce at start:** "Using implement to drive this end-to-end. I won't stop for approval — every decision I make on your behalf lands in the PR's Decisions section at the end."
 
 ## Skills
 
@@ -303,9 +303,8 @@ unresolved.
 
 ### Close out
 
-Every Phase 1-4 ruling belongs in the PR body's `## Decisions` section, not
-only the ledger — a human reviewing the PR sees the PR, not a ledger deleted
-at Finish. Exhaustive or the run is unreviewable.
+`## Decisions` is exhaustive or the run is unreviewable — a human reviewing
+the PR sees the PR, not a ledger deleted at Finish.
 
 ## Hard stops
 
@@ -341,7 +340,7 @@ oversight.**
 | "This got big, I should check in before Phase 3" | Scope growth upgrades the path and gets a ruling. It buys no check-in. |
 | "The user would obviously want this merged" | The PR is authorized. The merge is not. |
 | "CI is flaky, re-run and move on" | A red check is a failure. Investigate it, or spend a round and say so in the handoff. |
-| "The ruling list is long, I'll summarize" | Summarizing is discarding. Exhaustive or it substitutes for nothing. |
+| "`## Decisions` is long, I'll summarize" | Summarizing is discarding. Exhaustive or it substitutes for nothing. |
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
 | "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
 | "Both halves passed review, so the merge is a formality" | Independent reviews say nothing about the seam. Judge the merge itself, same as any other change. |
