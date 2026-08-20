@@ -1,6 +1,6 @@
 ---
 name: instruction-audit
-description: Use when asked to audit, clean up, lean, compact, or reduce a skill file or CLAUDE.md — or when one reads like a record of how it was built, or is simply longer than it needs to be, rather than a compact set of instructions to follow now. Trims anything that isn't load-bearing, because every line loads into context on every session that reads it. `/instruction-audit install` or `/instruction-audit hook` instead installs a global reminder hook that nudges a future SKILL.md/CLAUDE.md edit to get audited — it does not audit anything itself.
+description: Use when asked to audit, clean up, lean, compact, or reduce a skill file or CLAUDE.md — or when one reads like a record of how it was built, or is simply longer than it needs to be. Trims anything that isn't load-bearing, since every line loads into context on every session that reads it. `/instruction-audit install` or `hook` is a separate command, covered in the Procedure section — it does not audit anything.
 ---
 
 # Instruction Audit
@@ -59,14 +59,34 @@ correctly; don't narrate the wrong turns taken to find it.
   escape sequence, a specific flag, a step a later step depends on. Looking
   redundant isn't the same as being inert.
 - **Duplicates**: the same fact, path, command, or instruction stated more
-  than once, even when the wording differs each time. Consolidate to one
-  location.
+  than once, even when the wording differs each time — including a
+  frontmatter description restated as the body's opening line or
+  paragraph, a common place for it to hide. Consolidate to one location.
 - **Contradictions**: two parts of the skill that disagree — a rule one
   section states that an example elsewhere violates, a frontmatter claim
   the body doesn't match, two steps that assume opposite things.
 - **Wrong facts**: a file path, tool name, command, version, or URL that no
   longer matches reality. Verify each one directly — read the file it
   points to, run the command — don't take the skill's word for it.
+
+## Frontmatter and structure rules
+
+Applies to a `SKILL.md`'s YAML frontmatter and file layout; a `CLAUDE.md`
+has neither, so skip this section for one.
+
+- **Required fields**: `name` and `description`, both strings. The only
+  other recognized keys are `license`, `allowed-tools`, `metadata`,
+  `compatibility` — flag any other key.
+- **`name`**: kebab-case only (lowercase letters, digits, hyphens), no
+  leading or trailing hyphen, no consecutive hyphens, max 64 characters.
+- **`description`**: max 1024 characters (hard cap), under ~500 if
+  possible; no angle brackets. States triggering conditions — ideally
+  opening with "Use when..." — rather than previewing the body's steps: a
+  description that summarizes the procedure lets an agent act on it and
+  skip reading the rest.
+- **Body size**: no hard cap, but every line is a recurring context tax —
+  hold it to what step 8 leaves after compacting. Past roughly 500 lines,
+  point to a separate reference file instead of staying inline.
 
 ## Procedure
 
@@ -79,49 +99,59 @@ touch the hook.
 1. Read the file in full.
 2. Note where it lives: global (`~/.claude/skills`, claude.ai), project
    `CLAUDE.md`/`AGENTS.md`, or project-scoped skill
-   (`<project>/.claude/skills`). Only a global skill gets step 4's check.
-3. For each paragraph: does it say what to do now, or how it came to be?
-   Narration fails even when true.
-4. For a global skill, for each concrete fact or example: does it hold for
-   any project this skill might run against, or only the one it was
-   written against? Generalize the ones that don't, or cut them.
-5. For a "don't do X" warning: is X still a live temptation, or dead
-   history? Keep only the former, and only as a rule, not a story.
-6. Before cutting anything from steps 3-5, check it isn't load-bearing —
-   would removing it break a real invocation, not just read as filler?
-7. Merge duplicates into their single best location; delete the rest — even
-   ones that don't share wording. Flag any contradiction between two parts
-   of the file. Verify every concrete path, command, tool name, version, or
-   URL directly (read the file, run the command) rather than trust it —
-   correct what's wrong.
-8. Compact what survives: for every remaining phrase, ask whether it says
-   the same thing in fewer words without losing meaning, and rewrite it if
-   so. This applies to content kept in earlier steps just as much as new
-   edits — a rule can be correct, non-redundant, and still verbose.
-9. Re-validate frontmatter and structure after editing (skill-creator's
-   `quick_validate.py`, if available, for a `SKILL.md`).
-10. Report what was cut, merged, corrected, and compacted, and why — don't
-    silently discard something the user may have wanted kept. Note the
-    before/after size (lines or words) so the context-footprint reduction
-    is visible, not just claimed.
+   (`<project>/.claude/skills`). Only a global skill needs the
+   project-specific-fact bullet in "What to cut."
+3. Walk every paragraph against "What to cut" and "What to keep" — check
+   load-bearing status, per "What to verify," before acting on any of it.
+4. Apply "What to verify": merge duplicates, flag contradictions, and
+   verify every concrete fact directly (read the file it points to, run
+   the command) rather than trust it — correct what's wrong.
+5. Compact what survives, per the last "What to cut" bullet — this applies
+   to content just kept, not only new edits.
+6. Check frontmatter and structure against the rules above. Skill-creator's
+   `quick_validate.py`, if present, checks the same mechanical rules — a
+   convenient cross-check, not a dependency.
+7. Report what was cut, merged, corrected, and compacted, and why — don't
+   silently discard something the user may have wanted kept. Note the
+   before/after size (lines or words) so the context-footprint reduction
+   is visible, not just claimed.
 
 ## Reminder hook
 
 Installed globally, on demand, by `/instruction-audit install` (or `hook`) — never
-as a side effect of an ordinary audit. Check `~/.claude/settings.json` for a
-`Stop` hook whose command mentions `SKILL.md`; skip if one already does.
-Otherwise merge this in (don't replace any existing `hooks`/`Stop` array).
-Uses `sed`/`grep`/`tail` only, not `jq` — a global hook can't assume `jq` is
-on this machine:
+as a side effect of an ordinary audit. Two hooks work together: `PostToolUse`
+marks that a `SKILL.md`/`CLAUDE.md` edit happened, `Stop` fires the reminder
+once per turn and clears the mark. This detects the edit at the moment it
+happens rather than scanning the transcript for it afterward — on a long
+call chain, enough tool output after the edit can push it past any bounded
+scan window, so scanning can silently miss it; detecting it live cannot.
+
+Check `~/.claude/settings.json` for both hooks already present and matching
+the versions below (covering both `SKILL.md` and `CLAUDE.md`); skip only
+then. A `Stop`-only hook that scans the transcript, or one covering
+`SKILL.md` alone, is the stale prior design — replace it. Merge these in
+without replacing any existing `hooks` arrays. Uses `sed`/`grep` only, not
+`jq` — a global hook can't assume `jq` is on this machine:
 ```json
 {
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); [ -n \"$SID\" ] && printf '%s' \"$IN\" | grep -qE '\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md)\"' && touch \"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; true"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "sed -n 's/.*\"transcript_path\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p' | { read -r tp; [ -n \"$tp\" ] && tail -c 50000 \"$tp\" 2>/dev/null | grep -qE '\"name\":\"(Edit|Write)\",\"input\":\\{\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md)\"' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or CLAUDE.md file was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; [ -n \"$SID\" ] && [ -f \"$MARKER\" ] && { rm -f \"$MARKER\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or CLAUDE.md file was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
           }
         ]
       }
@@ -129,17 +159,22 @@ on this machine:
   }
 }
 ```
-A `Stop` hook fires once when the turn ends, not once per edit — so a file
-edited several times in one turn still only triggers one reminder, after
-every change to it has already landed. The pattern matches only an `Edit`
-or `Write` tool call whose `file_path` ends in `SKILL.md` or `CLAUDE.md` —
-never grep for the bare substring across the tail: it also matches a `Read`
-call, and in a skill-heavy conversation it matches ordinary prose too,
-firing on nearly every turn regardless of whether anything was edited.
-Pipe-test the raw command with a synthetic transcript line shaped like a
-real `Edit`/`Write` tool-use block targeting a `SKILL.md`/`CLAUDE.md` path,
-and with one that only mentions either name in prose or in a `Read` call, to
-confirm the second one stays silent. Validate the written file with
+`PostToolUse`'s `matcher` restricts it to `Edit`/`Write` calls; its command
+reads `tool_input.file_path` and `session_id` straight from its own JSON —
+no transcript involved — and touches a session-scoped marker file when the
+path ends in `SKILL.md` or `CLAUDE.md`. `Stop` reads the same `session_id`,
+checks for that marker, fires once, and deletes it — so a file edited
+several times in one turn still triggers only one reminder, and a later
+`Stop` with nothing new stays silent. Scoping the marker to `session_id`
+keeps concurrent sessions on the same machine from tripping each other's
+reminder.
+
+Pipe-test both commands before installing: feed `PostToolUse` a synthetic
+`Edit`/`Write` JSON line targeting `SKILL.md`/`CLAUDE.md` and confirm the
+marker appears, then one targeting an unrelated file and confirm it
+doesn't. Feed `Stop` a matching `session_id` and confirm it fires once and
+clears the marker, then feed it again and confirm it now stays silent.
+Validate the written file with
 `python -c "import json; json.load(open('...'))"` (valid JSON) and
-`grep -c 'SKILL\.md\|CLAUDE\.md' ~/.claude/settings.json` (the hook is
-actually in there).
+`grep -c 'instruction-audit-pending' ~/.claude/settings.json` (both hooks
+are actually in there).

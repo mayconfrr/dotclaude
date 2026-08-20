@@ -5,7 +5,6 @@ description: "Bootstrap a project's Open Knowledge Format (OKF) bundle, or keep 
 
 # OKF
 
-Bootstraps a bundle, or keeps an existing one's `okf_version` current.
 Bundle *content* sync is the commit hook's job (step 3) — don't diff code
 against docs here.
 
@@ -56,7 +55,7 @@ against docs here.
            "hooks": [
              {
                "type": "command",
-               "if": "Bash(git commit*)",
+               "if": "Bash(git commit *)",
                "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"A commit just landed. Check for an OKF bundle: an index.md with an okf_version key, anywhere in the repo. If one exists, update any concept doc whose claims just changed (generated/verified/stale_after fields too, honestly), add a doc for a genuinely new concept worth one, and refresh log.md/index.md for whatever you touch. Leave everything else alone.\"}}'"
              }
            ]
