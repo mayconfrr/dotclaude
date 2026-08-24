@@ -10,6 +10,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | [`implement`](implement/SKILL.md) | Drives a code change end-to-end — brainstorm, plan, subagent-driven execution, whole-branch review, PR — without stopping for step-by-step approval. |
 | [`okf`](okf/SKILL.md) | Bootstraps a project's [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog) bundle, or keeps an existing one's declared spec version current. |
 | [`instruction-audit`](instruction-audit/SKILL.md) | Audits a skill file or CLAUDE.md for anything that isn't load-bearing — development narration, redundant restatement, verbose phrasing — verifies its facts, duplicates, and contradictions, and compacts what survives. |
+| [`visual-spec`](visual-spec/SKILL.md) | Turns a stakeholder request, feature ask, or bug into an implementation-ready spec — grounded in the real codebase, gaps hunted and confirmed with the user, presented as a designed, diagrammed Artifact — then shipped as a markdown doc and/or GitHub issue. |
 
 ## Prerequisites
 
@@ -18,6 +19,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.) and the [`gh`](https://cli.github.com/) CLI. `code-review` and `simplify` ship bundled with Claude Code — no separate install. |
 | `okf` | Network access to fetch the spec; `jq` to validate the commit hook it installs. |
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
+| `visual-spec` | The `artifact-design`, `artifact-diagramming`, `artifact-capabilities`, and `dataviz` skills, and the `superpowers` marketplace's `brainstorming` — all bundled with Claude Code. |
 
 ## Using a skill
 
