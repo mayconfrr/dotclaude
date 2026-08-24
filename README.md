@@ -19,7 +19,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.) and the [`gh`](https://cli.github.com/) CLI. `code-review` and `simplify` ship bundled with Claude Code — no separate install. |
 | `okf` | Network access to fetch the spec; `jq` to validate the commit hook it installs. |
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
-| `visual-spec` | The `artifact-design`, `artifact-diagramming`, `artifact-capabilities`, and `dataviz` skills, and the `superpowers` marketplace's `brainstorming` — all bundled with Claude Code. |
+| `visual-spec` | The `artifact-design`, `artifact-diagramming`, `artifact-capabilities`, and `dataviz` skills, which ship bundled with Claude Code, plus `brainstorming` from the [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace. |
 
 ## Using a skill
 
