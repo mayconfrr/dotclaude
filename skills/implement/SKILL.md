@@ -37,9 +37,10 @@ written — do not re-derive it, do not soften it.
 
 Keep a todo list for the whole run: one entry per phase, one per plan task
 once Phase 2 produces them, one per Phase 4 review round, one for the Phase
-5 PR-monitoring loop. Update it as each completes rather than batching
-updates at the end — it is the run's visible state, and a resumed or
-interrupted run reads it before reading anything else.
+4.5 full-suite gate, one for the Phase 5 PR-monitoring loop. Update it as
+each completes rather than batching updates at the end — it is the run's
+visible state, and a resumed or interrupted run reads it before reading
+anything else.
 
 ## Phase 0 — Resolve the request
 
@@ -252,6 +253,26 @@ there opens its own fix-then-review loop, capped at **3 rounds** — separate
 from the budget above, since a cleanup pass has a narrower footprint to
 re-check. At round 3 with findings still open, hand over the same way.
 
+## Phase 4.5 — Full-suite gate
+
+The implementation is not finished until every automated test suite the
+change spans passes in full, run the way the project runs them for a full
+build (the commands its CI, build file, or contributing docs use), from a
+clean tree. If the project splits suites by layer, service, or package, run
+every one the change touches, not just the one that changed. Read the
+actual output under `superpowers:verification-before-completion` — a suite
+you did not run is not a suite that passed.
+
+A project with no automated test suite has nothing to gate on here; don't
+invent one — note the absence and move on.
+
+This gate is independent of CI: required even when the PR's CI is disabled,
+unavailable, or out of budget. A failure here is Phase-3 work, not a
+Phase-5 footnote — root-cause it with `superpowers:systematic-debugging`,
+fix it, and re-run until green before opening or finishing the PR. Never
+narrow the suite, mark a failing test skipped/pending, or ship red to "let
+CI sort it out."
+
 ## Phase 5 — Finish and ship
 
 The base branch is already resolved — do not confirm it. Present no menu; the
@@ -317,6 +338,8 @@ Stop and hand over for:
 - a plan defect where every path forward is a guess
 - the whole-branch fix loop reaching round 5 with findings open
 - the post-`simplify` fix loop reaching round 3 with findings open
+- the Phase 4.5 full suite(s) still red after root-causing it, rather than
+  opening or finishing the PR on a red suite
 - the PR loop reaching round 5 with checks red or comments unresolved
 - an integration conflict surviving one rebase round per side
 - `/implement <number>` where the issue cannot be fetched
