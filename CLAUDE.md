@@ -22,5 +22,4 @@ in the project's docs, not as an inline comment: a per-module reference doc,
 an architecture doc, a gotchas/constraints file, or an Open Knowledge Format
 (OKF) bundle if the project has one — write the concept doc directly,
 following the bundle's existing conventions. If the project keeps no such
-doc and has no OKF bundle, start one with the `okf` skill rather than
-defaulting to a comment.
+doc, start one rather than defaulting to a comment.
