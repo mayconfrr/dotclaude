@@ -27,10 +27,12 @@ This skill orchestrates other skills; it does not replace them. Follow each one 
 
 1. **Brainstorm** (`superpowers:brainstorming`). Classify (spike / bounded / architectural), understand purpose and constraints, agree on the shape of the deliverable. Confirm destination early: markdown file, GitHub issue, or both.
 2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down** — do not take the request's framing at face value. Requests describe *intent*; the code describes *reality*, and they diverge (one term in the request may map to two different mechanisms in the code; a field or value the request assumes exists may not; a constant in one place may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. (Skip only when there is genuinely no codebase yet — a greenfield project — and say so.)
-3. **Hunt gaps and ask** — see the discipline below. This is the step most likely to be skipped and the most valuable.
+3. **Hunt gaps and ask** — see the discipline below.
 4. **Build the visual spec** as an Artifact, following the recipe below.
 5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up. Every new fact from the user gets folded in.
-6. **Ship** to the chosen destination (markdown commit and/or GitHub issue), self-contained and `/implement`-ready.
+6. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
+7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **second, stakeholder-facing Artifact** per `references/stakeholder-companion.md` (read it now): a companion to the technical spec, not a replacement. Publish it separately and hand over both. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
+8. **Ship on request** — see Shipping.
 
 ## Gap discipline (the heart of this skill)
 
@@ -75,8 +77,8 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 
 ## Shipping
 
-Confirm the destination with the user (asked in step 1).
+Ship only after approval (step 6), and produce the stakeholder companion (step 7) first. Confirming the destination in step 1 records intent, not the go-ahead.
 
-- **Markdown file:** author a committable `.md` twin of the spec (e.g., under `docs/specs/`), consistent with the artifact. Follow the repo's branch/PR conventions. Link the artifact URL in the doc.
-- **GitHub issue:** open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact.
-- Either way the deliverable must stand alone — a cold reader implements from it without this conversation.
+- **Markdown file:** author a committable `.md` twin of the spec (e.g., under `docs/specs/`), consistent with the artifact. Follow the repo's branch/PR conventions. Link the artifact URL.
+- **GitHub issue:** never open it proactively. Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact.
+- Either destination must stand alone — a cold reader implements from it without this conversation.

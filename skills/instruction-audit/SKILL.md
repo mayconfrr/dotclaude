@@ -5,11 +5,9 @@ description: Use when asked to audit, clean up, lean, compact, or reduce a skill
 
 # Instruction Audit
 
-A skill or CLAUDE.md is a recipe, not a lab notebook — and every line of it
-loads into context on every session that reads it. Cost is not
-hypothetical: length here is a direct, recurring tax on every future
-invocation. State the correct procedure, as compactly as it can be stated
-correctly; don't narrate the wrong turns taken to find it.
+A skill or CLAUDE.md is a recipe, not a lab notebook. State the correct
+procedure, as compactly as it can be stated correctly; don't narrate the
+wrong turns taken to find it.
 
 ## What to cut
 
@@ -39,6 +37,15 @@ correctly; don't narrate the wrong turns taken to find it.
   touch, cut and keep alike. Dropping a qualifier that narrows or hedges
   the meaning ("for any reason", "in this codebase") is not this — only
   drop words whose absence changes nothing a reader would act on.
+- **Optional-path content carried inline.** A section that applies only
+  when the user opts into something the skill can produce — a sub-mode, an
+  extra deliverable, a format they must ask for — still loads on every
+  invocation where that path isn't taken. Move it to a reference file the
+  SKILL.md points to *from the step that triggers the path*, leaving a
+  one-line pointer inline (progressive disclosure). This is for content
+  gated behind a choice, not core procedure — don't defer what every run
+  needs, and verify the move against "Reference integrity" below so the
+  pointer doesn't dangle.
 
 ## What to keep
 
@@ -68,6 +75,12 @@ correctly; don't narrate the wrong turns taken to find it.
 - **Wrong facts**: a file path, tool name, command, version, or URL that no
   longer matches reality. Verify each one directly — read the file it
   points to, run the command — don't take the skill's word for it.
+- **Reference integrity**: every file the skill points to must resolve at
+  the path given (relative to the file that names it), the pointer must sit
+  on the step that needs it so it loads only then, and no always-run step
+  may depend on a file that loads only on an optional path. A dangling
+  path, or a pointer that fires on the wrong step, breaks silently — a run
+  that never opens the reference, or one that needs it and can't find it.
 
 ## Frontmatter and structure rules
 
@@ -85,7 +98,7 @@ has neither, so skip this section for one.
   description that summarizes the procedure lets an agent act on it and
   skip reading the rest.
 - **Body size**: no hard cap, but every line is a recurring context tax —
-  hold it to what step 8 leaves after compacting. Past roughly 500 lines,
+  hold it to what the compacting step leaves. Past roughly 500 lines,
   point to a separate reference file instead of staying inline.
 
 ## Procedure
@@ -95,6 +108,23 @@ reminder hook below and stop — don't audit anything.
 
 **Invoked any other way:** audit the given skill file or `CLAUDE.md`; never
 touch the hook.
+
+**Always run the audit in a fresh, zero-context subagent** — not in the
+conversation that wrote the file. Fresh eyes are the whole point: whoever
+just edited the file is primed by those edits and blind to their own
+rationalizations, while a subagent with no history reads the text as a cold
+reader will. Dispatch one whose only inputs are the target file's path and
+this skill's criteria (point it at this `SKILL.md` to read). It applies the
+clear cuts, but for anything it judges borderline load-bearing — a
+redundant-looking line that might be a guard, a fact that might be depended
+on — it proposes the cut in its report instead of making it, because a
+zero-context reader is precisely the one most likely to mistake a
+load-bearing line for filler. Relay its report, borderline calls included,
+so those get a decision from someone with the context. On a Claude runtime
+that allows model selection, run it on Sonnet — the audit is mechanical
+enough that Sonnet is the right cost/quality point; on other runtimes use
+the default model. Only if the runtime has no subagents at all, audit
+inline — but still treat the file as a stranger's.
 
 1. Read the file in full.
 2. Note where it lives: global (`~/.claude/skills`, claude.ai), project
@@ -106,8 +136,8 @@ touch the hook.
 4. Apply "What to verify": merge duplicates, flag contradictions, and
    verify every concrete fact directly (read the file it points to, run
    the command) rather than trust it — correct what's wrong.
-5. Compact what survives, per the last "What to cut" bullet — this applies
-   to content just kept, not only new edits.
+5. Compact what survives, per the "fewer words" bullet in "What to cut" —
+   this applies to content just kept, not only new edits.
 6. Check frontmatter and structure against the rules above. Skill-creator's
    `quick_validate.py`, if present, checks the same mechanical rules — a
    convenient cross-check, not a dependency.
