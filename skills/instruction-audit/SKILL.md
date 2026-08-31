@@ -145,11 +145,14 @@ enough that Sonnet is the right cost/quality point; on other runtimes use
 the default model. Only if the runtime has no subagents at all, audit
 inline — but still treat the file as a stranger's.
 
-1. Read the file in full.
+1. Read the file in full. If the target is a `settings.json` hooks block or a
+   doc that documents hooks, also read "Auditing hooks."
 2. Note where it lives: global (`~/.claude/skills`, claude.ai), project
-   `CLAUDE.md`/`AGENTS.md`, or project-scoped skill
-   (`<project>/.claude/skills`). Only a global skill needs the
-   project-specific-fact bullet in "What to cut."
+   `CLAUDE.md`/`AGENTS.md`, project-scoped skill (`<project>/.claude/skills`),
+   or a `settings.json` hooks block (`~/.claude/settings.json` global,
+   `<project>/.claude/settings.json` project). Only a global skill — or a
+   global `settings.json` — needs the project-specific-fact bullet in "What to
+   cut."
 3. Walk every paragraph against "What to cut" and "What to keep" — check
    load-bearing status, per "What to verify," before acting on any of it.
 4. Apply "What to verify": merge duplicates, flag contradictions, and
