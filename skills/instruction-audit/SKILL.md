@@ -1,6 +1,6 @@
 ---
 name: instruction-audit
-description: Use when asked to audit, clean up, lean, compact, or reduce a skill file or CLAUDE.md — or when one reads like a record of how it was built, or is simply longer than it needs to be. Trims anything that isn't load-bearing, since every line loads into context on every session that reads it. `/instruction-audit install` or `hook` is a separate command, covered in the Procedure section — it does not audit anything.
+description: Use when asked to audit, clean up, lean, compact, or reduce a skill file, CLAUDE.md, or the instruction text in hooks (a settings.json hooks block or a hook reference doc) — or when one reads like a record of how it was built, or is simply longer than it needs to be. `/instruction-audit install` or `hook` is a separate command, covered in the Procedure section — it does not audit anything.
 ---
 
 # Instruction Audit
@@ -74,7 +74,11 @@ wrong turns taken to find it.
   the body doesn't match, two steps that assume opposite things.
 - **Wrong facts**: a file path, tool name, command, version, or URL that no
   longer matches reality. Verify each one directly — read the file it
-  points to, run the command — don't take the skill's word for it.
+  points to, run the command — don't take the skill's word for it. When the
+  text names a specific operation, method, flag, or identifier of a tool,
+  verify that exact identifier against the tool's own description or schema: a
+  real capability, or an installed plugin, does not confirm the identifier is
+  spelled or named correctly.
 - **Reference integrity**: every file the skill points to must resolve at
   the path given (relative to the file that names it), the pointer must sit
   on the step that needs it so it loads only then, and no always-run step
@@ -82,10 +86,22 @@ wrong turns taken to find it.
   path, or a pointer that fires on the wrong step, breaks silently — a run
   that never opens the reference, or one that needs it and can't find it.
 
+## Auditing hooks
+
+A hook's auditable instruction is the prose it injects into Claude's context —
+the text a hook emits, via a `hookSpecificOutput.additionalContext` field or
+plain stdout (which channel each event uses is version-specific; don't assert
+one). Audit that prose against the rules above. The rest of the `command` is
+mechanism, not instruction — the shell that builds and emits that text, in
+whatever shell the platform runs hooks in (escaping and available utilities
+differ across shells, so don't assume POSIX `sh`). Leave it alone unless it is
+factually wrong. Scope still applies (step 2) — a project's `settings.json` may
+carry project facts, but a hook doc a global skill ships must generalize them.
+
 ## Frontmatter and structure rules
 
 Applies to a `SKILL.md`'s YAML frontmatter and file layout; a `CLAUDE.md`
-has neither, so skip this section for one.
+or a hooks target has neither, so skip this section for those.
 
 - **Required fields**: `name` and `description`, both strings. The only
   other recognized keys are `license`, `allowed-tools`, `metadata`,
@@ -106,8 +122,11 @@ has neither, so skip this section for one.
 **Invoked as `/instruction-audit install` or `/instruction-audit hook`:** install the
 reminder hook below and stop — don't audit anything.
 
-**Invoked any other way:** audit the given skill file or `CLAUDE.md`; never
-touch the hook.
+**Invoked any other way:** audit the given target — a skill file, a
+`CLAUDE.md`, or hooks (a project's `settings.json` `hooks` block, or a doc
+that documents hooks). Do not install or modify the reminder hook below as
+part of an ordinary audit — that belongs to the `install`/`hook` command
+alone.
 
 **Always run the audit in a fresh, zero-context subagent** — not in the
 conversation that wrote the file. Fresh eyes are the whole point: whoever
@@ -160,8 +179,9 @@ Check `~/.claude/settings.json` for both hooks already present and matching
 the versions below (covering both `SKILL.md` and `CLAUDE.md`); skip only
 then. A `Stop`-only hook that scans the transcript, or one covering
 `SKILL.md` alone, is the stale prior design — replace it. Merge these in
-without replacing any existing `hooks` arrays. Uses `sed`/`grep` only, not
-`jq` — a global hook can't assume `jq` is on this machine:
+without replacing any existing `hooks` arrays. Assumes a POSIX shell (on
+Windows, Git Bash) and uses `sed`/`grep` only, not `jq` — a global hook can't
+assume `jq` is on this machine:
 ```json
 {
   "hooks": {

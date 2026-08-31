@@ -1,10 +1,10 @@
 # Freshness-loop hooks (Claude Code)
 
 Two project-level hooks in the target project's `.claude/settings.json` keep its
-OKF bundle current. They assume the bundle root is `docs/` and a POSIX shell
-(adjust the commands if the target runs hooks under Windows cmd/PowerShell).
-Merge into any existing `hooks` arrays — don't replace them. Add with the user's
-approval; the `Stop` hook runs at every turn end.
+OKF bundle current. They assume a POSIX shell (adjust the commands if the target
+runs hooks under Windows cmd/PowerShell) — see Notes below for the bundle-root
+assumption. Merge into any existing `hooks` arrays — don't replace them. Add with
+the user's approval; the `Stop` hook runs at every turn end.
 
 After editing, validate:
 `python -c "import json; json.load(open('.claude/settings.json'))"`, confirm both
