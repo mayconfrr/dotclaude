@@ -44,7 +44,7 @@ stays quiet on turns that don't touch code.
         "hooks": [
           {
             "type": "command",
-            "command": "P=$(git status --porcelain 2>/dev/null | sed 's/^...//; s/.* -> //'); NONDOCS=$(printf '%s\\n' \"$P\" | grep -vE '^docs/|^$'); DOCS=$(printf '%s\\n' \"$P\" | grep -E '^docs/'); [ -n \"$NONDOCS\" ] && [ -z \"$DOCS\" ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"Code changed but docs/ did not. If any change added or altered durable knowledge, update the matching OKF concept before finishing: bump generated.at, refresh the area index.md, append log.md.\"}}'; true"
+            "command": "P=$(git status --porcelain -uno 2>/dev/null | sed 's/^...//; s/.* -> //'); NONDOCS=$(printf '%s\\n' \"$P\" | grep -vE '^docs/|^$'); DOCS=$(printf '%s\\n' \"$P\" | grep -E '^docs/'); [ -n \"$NONDOCS\" ] && [ -z \"$DOCS\" ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"Code changed but docs/ did not. If any change added or altered durable knowledge, update the matching OKF concept before finishing: bump generated.at, refresh the area index.md, append log.md.\"}}'; true"
           }
         ]
       }
@@ -55,6 +55,12 @@ stays quiet on turns that don't touch code.
 
 ## Notes
 
+- `-uno` (`--untracked-files=no`) scopes the check to **tracked** changes, so
+  untracked build artifacts / IDE dirs don't fire a false "update docs" nudge on
+  every turn.
+- Keep `additionalContext` free of `'` (single quotes): the JSON payload is
+  wrapped in a single-quoted `echo`, so an apostrophe in the text closes the
+  string early and breaks the hook.
 - `sed 's/^...//; s/.* -> //'` strips the two-column porcelain status prefix and
   resolves rename entries (`R old -> new`) to the new path.
 - The `Stop` hook is a **reminder, not a gate** — the trailing `true` ensures it
