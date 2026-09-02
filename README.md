@@ -7,7 +7,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 
 | Skill | What it does |
 |---|---|
-| [`implement`](skills/implement/SKILL.md) | Drives a code change end-to-end — brainstorm, plan, subagent-driven execution, whole-branch review, PR — without stopping for step-by-step approval. |
+| [`implement`](skills/implement/SKILL.md) | Drives a code change end-to-end — brainstorm, plan, subagent-driven execution, whole-branch review, draft PR — without stopping for step-by-step approval. |
 | [`instruction-audit`](skills/instruction-audit/SKILL.md) | Audits a skill file, CLAUDE.md, or hook instruction text for anything that isn't load-bearing — development narration, redundant restatement, verbose phrasing — verifies its facts, duplicates, and contradictions, and compacts what survives. |
 | [`okf`](skills/okf/SKILL.md) | Introduces [Open Knowledge Format](https://github.com/GoogleCloudPlatform/open-knowledge-format) to a project — scaffolds a `docs/` knowledge bundle, authors the base concepts, wires the freshness hooks (the `Stop` nudge fires once per distinct working-tree change, not every turn), and installs a curation skill — giving agents durable repo knowledge that ships in git. |
 | [`serana`](skills/serana/SKILL.md) | Sets up [Serena](https://github.com/oraios/serena) in a project — registers language servers, seeds onboarding memories, and installs the recommended Claude Code hooks — giving agents durable, code-verified repo knowledge. |

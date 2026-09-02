@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Use when asked to implement, build, fix, refactor, or ship a code change end-to-end without pausing for step-by-step approval, including a bare GitHub issue number such as `/implement 384`. Triggers on "implement X", "build X and open a PR", "work issue 384", "just do it", "don't ask me", "run with it", unattended or autonomous implementation, and any request to carry a GitHub issue through to a pull request with green CI. Use it even when the request sounds small, since scope is discovered rather than assumed.
+description: Use when asked to implement, build, fix, refactor, or ship a code change end-to-end without pausing for step-by-step approval, including a bare GitHub issue number such as `/implement 384`. Triggers on "implement X", "build X and open a PR", "work issue 384", "just do it", "don't ask me", "run with it", unattended or autonomous implementation, and any request to carry a GitHub issue through to a draft pull request backed by a green full-suite run. Use it even when the request sounds small, since scope is discovered rather than assumed.
 ---
 
 # Implement
 
-Drive a change from request to green pull request without stopping for approval.
+Drive a change from request to an open draft pull request without stopping for approval.
 
 **Announce at start:** "Using implement to drive this end-to-end. I won't stop for approval — every decision I make on your behalf lands in the PR's Decisions section at the end."
 
@@ -279,12 +279,17 @@ The base branch is already resolved — do not confirm it. Present no menu; the
 terminal state follows the remote.
 
 **GitHub** (`gh repo view` succeeds, or `origin` matches github.com): take
-Option 2. The PR base is `${BASE#origin/}`. From an issue run, the body closes
-it (`Closes #384`). The body carries a `## Decisions` section: every ruling,
-from any phase, where more than one viable option existed and you picked one
-without asking — what you decided, why, what it costs if wrong. A mechanical
-step with no real alternative doesn't belong here; a genuine judgment call
-does, whether or not it turned out to matter.
+Option 2, but open the PR **as a draft** (`gh pr create --draft`, or
+`gh pr ready --undo` if the forge tooling opened it ready). The PR base is
+`${BASE#origin/}`. From an issue run, the body closes it (`Closes #384`). The
+body carries a `## Decisions` section: every ruling, from any phase, where more
+than one viable option existed and you picked one without asking — what you
+decided, why, what it costs if wrong. A mechanical step with no real
+alternative doesn't belong here; a genuine judgment call does, whether or not
+it turned out to matter.
+
+The PR stays a draft — promoting it to ready-for-review is the human's call,
+never the run's.
 
 **Any other remote, or none:** take Option 3.
 
@@ -296,31 +301,25 @@ After the PR exists, watch its checks:
 gh pr checks --watch
 ```
 
-On red: invoke `superpowers:systematic-debugging`, fix the root cause, commit,
-push, watch again.
+A repo may gate CI on `draft == false`: no checks start until it's promoted,
+so `gh pr checks` reports none pending. That is expected, not a failure — do
+not promote the draft to force them. The Phase 4.5 full-suite gate, which
+already ran from a clean tree independent of CI, is the green evidence here;
+skip straight to handling review comments, next.
 
-Once the checks are green, watch for review comments for **5 minutes**, then
-stop:
+On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
+root cause, commit, push, watch again.
 
-```bash
-gh api "repos/{owner}/{repo}/pulls/$PR/comments"
-gh pr view --json reviews
-```
+Handle review comments under `superpowers:receiving-code-review` as they
+arrive — on cloud the run is auto-subscribed to the PR, so a comment wakes it
+later; do not poll or hold a window open waiting for one. Reply in the comment
+thread, never at top level. Pushing a fix reruns the checks: watch them again.
 
-Poll with the harness's monitor facility — a foreground `sleep` is blocked.
+Red CI is capped at 5 rounds, then hand over with the failing job's log excerpt
+and what each round tried.
 
-Handle every comment that arrives under `superpowers:receiving-code-review`.
-Reply in the comment thread, never at top level. Pushing a fix reruns the
-checks: watch them again, then take a fresh 5-minute window.
-
-Never extend the window waiting on a human reviewer. Their feedback lands in a
-later run, in the preserved worktree.
-
-Checks and comments share one budget. Cap 5 rounds, then hand over with the
-failing job's log excerpt or the unresolved comments, and what each round tried.
-
-The run ends when the checks are green and a 5-minute window closes with nothing
-unresolved.
+The run ends when the checks are green (or the PR is a draft with CI gated
+off). A later comment resumes it in the preserved worktree.
 
 ### Close out
 
@@ -340,7 +339,7 @@ Stop and hand over for:
 - the post-`simplify` fix loop reaching round 3 with findings open
 - the Phase 4.5 full suite(s) still red after root-causing it, rather than
   opening or finishing the PR on a red suite
-- the PR loop reaching round 5 with checks red or comments unresolved
+- the PR's CI reaching round 5 still red
 - an integration conflict surviving one rebase round per side
 - `/implement <number>` where the issue cannot be fetched
 
