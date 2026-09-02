@@ -44,7 +44,7 @@ stays quiet on turns that don't touch code.
         "hooks": [
           {
             "type": "command",
-            "command": "P=$(git status --porcelain -uno 2>/dev/null | sed 's/^...//; s/.* -> //'); NONDOCS=$(printf '%s\\n' \"$P\" | grep -vE '^docs/|^$'); DOCS=$(printf '%s\\n' \"$P\" | grep -E '^docs/'); [ -n \"$NONDOCS\" ] && [ -z \"$DOCS\" ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"Code changed but docs/ did not. If any change added or altered durable knowledge, update the matching OKF concept before finishing: bump generated.at, refresh the area index.md, append log.md.\"}}'; true"
+            "command": "P=$(git status --porcelain 2>/dev/null | sed 's/^...//; s/.* -> //'); NONDOCS=$(printf '%s\n' \"$P\" | grep -vE '^docs/|^$'); DOCS=$(printf '%s\n' \"$P\" | grep -E '^docs/'); if [ -n \"$NONDOCS\" ] && [ -z \"$DOCS\" ]; then R=$(git rev-parse --show-toplevel 2>/dev/null | sha1sum | cut -c1-16); M=${TMPDIR:-/tmp}/okf-nudge-$R; H=$(printf '%s' \"$NONDOCS\" | sha1sum | cut -c1-40); if [ \"$(cat \"$M\" 2>/dev/null)\" != \"$H\" ]; then printf '%s' \"$H\" > \"$M\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"Code changed but docs/ did not. If any change added or altered durable knowledge, update the matching OKF concept before finishing: bump generated.at, refresh the area index.md, append log.md.\"}}'; fi; fi; true"
           }
         ]
       }
@@ -55,9 +55,14 @@ stays quiet on turns that don't touch code.
 
 ## Notes
 
-- `-uno` (`--untracked-files=no`) scopes the check to **tracked** changes, so
-  untracked build artifacts / IDE dirs don't fire a false "update docs" nudge on
-  every turn.
+- The nudge fires **once per distinct working-tree state**, not every turn: it
+  hashes the non-`docs/` change list into a per-repo marker under `$TMPDIR` and
+  stays silent until that set changes. A clean tree (or committing the code)
+  clears it. This replaces the older `-uno` flag — the marker dedupes untracked
+  build-artifact / IDE-dir noise instead of hiding it, and also silences the
+  repeat-fire when the same diff sits uncommitted across several turns.
+- `sha1sum` and `$TMPDIR` (falling back to `/tmp`) must exist in the hook's
+  shell; both are present in Git Bash and standard POSIX shells.
 - Keep `additionalContext` free of `'` (single quotes): the JSON payload is
   wrapped in a single-quoted `echo`, so an apostrophe in the text closes the
   string early and breaks the hook.
