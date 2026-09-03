@@ -28,7 +28,6 @@ Categorize every requirement. Be ruthless about P0 — a tighter must-have list 
 | **P2** | Future | Out of scope for v1, but the design should not foreclose it. Architectural insurance. |
 
 "If everything is P0, nothing is P0" — challenge each must-have: would we really not ship without it?
-(MoSCoW maps onto this: Must→P0, Should/Could→P1, Won't-this-time→P2 or a Non-Goal.)
 
 ## Acceptance criteria
 
@@ -64,8 +63,6 @@ has none — don't manufacture one. The stakeholder companion is the usual home 
 Skip for a single-mechanism technical change. Use when the change serves distinct personas, or in the
 companion. Format: "As a [specific user type], I want [capability] so that [benefit]" — the type
 specific ("enterprise admin", not "user"), the capability a goal not a UI widget, the benefit the why.
-Order by priority; include error/empty/boundary states.
-
-Good stories are **INVEST**: Independent, Negotiable, Valuable, Estimable, Small, Testable. Common
-misses: too vague, solution-prescriptive ("a dropdown"), no benefit, too large, or internally framed
-("we want to refactor the DB" — that's a task, not a story).
+Order by priority; include error/empty/boundary states. Common misses: too vague,
+solution-prescriptive ("a dropdown"), no benefit, too large, or internally framed ("we want to
+refactor the DB" — that's a task, not a story).
