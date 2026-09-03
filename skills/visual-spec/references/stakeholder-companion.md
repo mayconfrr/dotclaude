@@ -13,6 +13,7 @@ Include, scaled to the change:
 
 - **Source request, verbatim** — the same anchor as the technical spec.
 - **Plain-language framing.** What the thing is, in the domain's own vocabulary; define the one or two terms the decision actually hinges on. Don't assume the reader knows the internal system names.
+- **Impact — why it matters.** The size and cost of the problem, in whatever evidence already exists (support-ticket volume, a metric, user research, the request's own framing) — what a sponsor weighs to prioritize. Carry the evidence through; never manufacture research the spec doesn't have — absent that, say the impact is asserted, not measured.
 - **The change, in behavior terms.** The *same cases* the technical spec itemizes, described by what becomes different for a user, an operator, or the data — with the config/code that expresses each case removed. A behavior table (per case → what happens) usually carries this best.
 - **Mechanism diagram** (`artifact-diagramming`) — the same flow as the technical diagram, but boxes named for business roles (systems, queues, actions, people), **never** class / file / method / config names. Highlight the same delta.
 - **What it will and won't do.** Explicit boundaries. The "won't" list prevents false expectations and is frequently the real crux of the decision — state it plainly.
