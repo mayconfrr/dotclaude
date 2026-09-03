@@ -18,6 +18,7 @@ Include, scaled to the change:
 - **What it will and won't do.** Explicit boundaries. The "won't" list prevents false expectations and is frequently the real crux of the decision — state it plainly.
 - **Before / after, or side-by-side** with whatever it mirrors or replaces, so the delta is visible at a glance.
 - **Decision-relevant tradeoffs, dependencies, and risk.** What this relies on from other teams or systems, what could go wrong, what stays open. Carry the technical spec's **Pending/Discovery** and **Open decisions** across in plain terms — the stakeholder frequently owns exactly these.
+- **Success metrics and user stories, when the change has them.** Leading/lagging indicators with targets, and per-persona stories — the lens this reader thinks in. See [spec-sections.md](spec-sections.md); include only when they inform the decision, not as boilerplate.
 
 Exclude anything that only matters to whoever writes the code — code, config, `file:line`, class/method names, internal identifiers. The discriminator: a fact that only guides implementation is out; a fact that changes the decision stays, however technical.
 
