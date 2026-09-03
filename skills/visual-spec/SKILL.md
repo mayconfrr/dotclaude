@@ -64,16 +64,17 @@ All of these mean: list the gap, ask the user, wait for the answer.
 
 ## Visual spec recipe
 
-Author as HTML per `artifact-design` (never Markdown as a shortcut past the design pass). Scale sections to the work; a small change doesn't need all of them. A typical implementation-ready spec has:
+Author as HTML per `artifact-design` (never Markdown as a shortcut past the design pass). Scale sections to the work; a small change doesn't need all of them. Several sections have a right and a wrong shape — Non-Goals, prioritized requirements, acceptance criteria, and (when the spec carries them) success metrics and user stories; `references/spec-sections.md` gives the shape of each — read it when you build those. A typical implementation-ready spec has:
 
 - **Source request, verbatim.** The stakeholder/user's exact words, quoted, marked as the source of truth. Everything else derives from it.
 - **Metadata strip.** Surface (backend/frontend/config), modules touched, dependencies, scope at a glance.
 - **Current state, grounded.** How it works today, with `file:line` references and the mechanism distinctions that matter. This is where code-grounding pays off.
 - **Mechanism diagram(s)** (`artifact-diagramming`). Draw the flow, the data that moves, the thing that changes — highlight the delta in one accent color. Label the arrows.
-- **The change, itemized.** Per feature / case / rule: exact behavior, the config or code that expresses it, and the real values.
+- **The change, itemized.** Per feature / case / rule: exact behavior, the config or code that expresses it, and the real values. Tag each item P0 / P1 / P2.
+- **Non-Goals.** Out-of-scope items, each with why — the boundary that keeps scope from creeping.
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).
-- **Acceptance criteria.** Checkable, per-case. (Optional: a live checklist via `artifact-capabilities` — keep a static twin.)
-- **Confirmed values** vs **Pending/Discovery** vs **Open decisions** — three distinct buckets (see gap discipline).
+- **Acceptance criteria.** Checkable, per-case — Given/When/Then or checklist, covering error and negative cases.
+- **Confirmed values** vs **Pending/Discovery** vs **Open decisions** — three distinct buckets (see gap discipline); tag each open item with its owner (eng / design / product / legal).
 
 ## Shipping
 
