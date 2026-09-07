@@ -17,7 +17,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 
 | Skill | Needs |
 |---|---|
-| `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.) and the [`gh`](https://cli.github.com/) CLI. `code-review` and `simplify` ship bundled with Claude Code — no separate install. |
+| `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.) and the [`gh`](https://cli.github.com/) CLI. `code-review` and `simplify` ship bundled with Claude Code — no separate install. [`ast-grep`](https://ast-grep.github.io/) (`sg`) is needed only for tasks that rewrite a pattern across multiple call sites. |
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
 | `okf` | None required — scaffolds plain markdown and wires Claude Code hooks, both built in. Network access to fetch the OKF spec is helpful but not essential. |
 | `serana` | The Serena MCP server registered (`mcp__serena__*` tools); network access to fetch its client-setup and hooks docs; the `serena-hooks` CLI on PATH for the hooks step. |
