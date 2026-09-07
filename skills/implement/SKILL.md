@@ -84,6 +84,11 @@ Skip the execution-mode question — always `subagent-driven-development`.
 Every task carries `Files:` and `Interfaces:` blocks. A plan without them runs
 fully serial.
 
+An `Interfaces:` entry that changes a signature or schema with existing
+callers plans the expand step and the contract step as two lines, not one —
+introduce the new form, migrate callers, remove the old form only once
+nothing references it.
+
 ## Phase 3 — Execute
 
 Resolve the base branch, then create the worktree without asking:
@@ -220,6 +225,23 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 +   made to explain itself — a non-obvious constraint, a workaround and
 +   the cause it works around, a deliberate tradeoff. Never restate what
 +   the line already says.
+
++ A new dependency in this task's diff is checked before it's installed,
++   not after — a malicious postinstall script has already run by the
++   time review catches it. Look at the package before adding it; skip
++   or flag anything that looks wrong rather than installing and
++   reporting it later.
+
++ Write for the failure case, not just the happy one: parameterize or
++   validate anything reaching a query, shell call, or template rather
++   than interpolating it, and read secrets from environment or a secret
++   store, never as a literal. Review catches what slips through here —
++   write as if nothing will.
+
++ A pattern-driven rewrite across multiple call sites — updating every
++   caller of a changed signature, a repo-wide codemod — goes through
++   ast-grep (structural match, dry-run before applying), not a manual
++   find/replace that can silently mismatch or miss a site.
 ```
 
 And in every fix-round message:
