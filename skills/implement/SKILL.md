@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Use when asked to implement, build, fix, refactor, or ship a code change end-to-end without pausing for step-by-step approval, including a bare GitHub issue number such as `/implement 384`. Triggers on "implement X", "build X and open a PR", "work issue 384", "just do it", "don't ask me", "run with it", unattended or autonomous implementation, and any request to carry a GitHub issue through to a draft pull request backed by a green full-suite run. Use it even when the request sounds small, since scope is discovered rather than assumed.
+description: Use when asked to implement, build, fix, refactor, or ship a code change end-to-end without pausing for approval, including a bare GitHub issue number like `/implement 384`. Triggers on "implement X", "build X and open a PR", "work issue 384", "just do it", "don't ask me", "run with it", unattended or autonomous implementation, and any request to carry an issue through to a draft PR backed by a green full-suite run. Use it even for small-sounding requests — scope is discovered, not assumed.
 ---
 
 # Implement
@@ -69,7 +69,7 @@ approval or spec review.
 Every question you would have asked becomes a ledger line:
 
 ```
-Ruling: <what you decided> — <why> — <what it costs if wrong>
+Ruling: <what you decided> — <alternatives considered, and why each lost> — <why this one> — <what it costs if wrong>
 ```
 
 Bounded: no spec file, the design lives in the ledger. Architectural: write the
@@ -90,6 +90,21 @@ introduce the new form, migrate callers, remove the old form only once
 nothing references it.
 
 ## Phase 3 — Execute
+
+`subagent-driven-development` ledgers its own rulings in three shapes:
+`Ruling: <what you decided> — <why> — <what it costs if wrong>`; a round-cap
+adjudication, `Task <N>: Ruling: <finding> — <what you decided and why>`; and
+a round-cap park, `Task <N>: parked — <finding> — Ruling: <why the code
+stands>`. None carries a distinct alternatives field, and neither round-cap
+shape carries a distinct cost-if-wrong field either. Write each, in Phase 3,
+in the full shape instead — same four elements as Phase 1's format,
+regardless of which SDD line shape triggered it:
+
+```
+<what you decided> — <alternatives considered, and why each lost> — <why this one> — <what it costs if wrong>
+```
+
+This layers onto SDD's ledger line; it isn't a change to SDD itself.
 
 Resolve the base branch, then create the worktree without asking:
 
@@ -306,7 +321,8 @@ Option 2, but open the PR **as a draft** (`gh pr create --draft`, or
 `${BASE#origin/}`. From an issue run, the body closes it (`Closes #384`). The
 body carries a `## Decisions` section: every ruling, from any phase, where more
 than one viable option existed and you picked one without asking — what you
-decided, why, what it costs if wrong. A mechanical step with no real
+decided, the alternatives considered and why each was passed over, why you
+picked this one, what it costs if wrong. A mechanical step with no real
 alternative doesn't belong here; a genuine judgment call does, whether or not
 it turned out to matter.
 
