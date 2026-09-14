@@ -5,7 +5,7 @@ for when this applies).
 
 Its reader is a decision-maker who will never open the repo — product, operations, a sponsor — who must be able to **approve, prioritize, or veto and be right about it**, without code. "Lacks implementation detail" is not "vague": every decision-relevant fact from the technical spec must survive, translated out of code terms. Under-detailing, not over-detailing, is the failure mode — a stakeholder who can't tell what actually changes can't approve correctly.
 
-A **separate** Artifact, in the stakeholders' language (default to the project/request's). Unlike the technical spec — where design barely matters — give it a calm, considered treatment: run the `impeccable` skill in its Read mode when installed; otherwise let `artifact-design` calibrate it like any other artifact here, aiming for a calm, text-forward page over a dashboard-dense one.
+A **separate** Artifact, in the stakeholders' language (default to the project/request's). Unlike the technical spec — where design barely matters — give it a calm, considered treatment: let `artifact-design` calibrate it like any other artifact here, aiming for a calm, text-forward page over a dashboard-dense one.
 
 **Format.** Ask how the stakeholder needs to receive it — a published **Artifact** (a live, theme-aware link, but the recipient may need Claude access to open it) or a **PDF** (portable, opens anywhere; pick this when it goes to someone outside the Claude team), or both. For a PDF, render the same HTML companion to PDF (via the `pdf` skill or headless Chromium) so it matches the page exactly.
 
