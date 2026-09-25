@@ -9,3 +9,6 @@
 !/settings.json
 !/.github/
 !/skills/
+
+# Claude Code-managed copies of the skills enabled on claude.ai.
+/skills/synced/
