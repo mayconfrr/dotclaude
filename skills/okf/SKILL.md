@@ -26,9 +26,7 @@ the user.
 - Trust, provenance, and freshness are first-class frontmatter signals.
 - No SDK, runtime, or database; anyone (human or agent) produces and consumes it.
 
-Prefer it when you want repo knowledge that ships in the repo. For LSP-backed
-symbolic tools plus agent-only memories instead, see the `serana` skill — the two
-solve overlapping problems; pick one canonical home (step 6).
+Prefer it when you want repo knowledge that ships in the repo.
 
 ## Procedure
 

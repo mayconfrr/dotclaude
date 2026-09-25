@@ -10,7 +10,6 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | [`implement`](skills/implement/SKILL.md) | Drives a code change end-to-end — brainstorm, plan, subagent-driven execution, whole-branch review, draft PR — without stopping for step-by-step approval. |
 | [`instruction-audit`](skills/instruction-audit/SKILL.md) | Audits a skill file, CLAUDE.md, or hook instruction text for anything that isn't load-bearing — development narration, redundant restatement, verbose phrasing — verifies its facts, duplicates, and contradictions, and compacts what survives. |
 | [`okf`](skills/okf/SKILL.md) | Introduces [Open Knowledge Format](https://github.com/GoogleCloudPlatform/open-knowledge-format) to a project — scaffolds a `docs/` knowledge bundle, authors the base concepts, wires the freshness hooks (the `Stop` nudge fires once per distinct working-tree change, not every turn), and installs a curation skill — giving agents durable repo knowledge that ships in git. |
-| [`serana`](skills/serana/SKILL.md) | Sets up [Serena](https://github.com/oraios/serena) in a project — registers language servers, seeds onboarding memories, and installs the recommended Claude Code hooks — giving agents durable, code-verified repo knowledge. |
 | [`visual-spec`](skills/visual-spec/SKILL.md) | Turns a stakeholder request, feature ask, or bug into an implementation-ready spec — grounded in the real codebase, gaps hunted and confirmed with the user, presented as a designed, diagrammed Artifact — then shipped as a markdown doc and/or GitHub issue. |
 
 ## Prerequisites
@@ -20,7 +19,6 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | `implement` | The [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace (brainstorming, writing-plans, subagent-driven-development, etc.) and the [`gh`](https://cli.github.com/) CLI. `code-review` and `simplify` ship bundled with Claude Code — no separate install. [`ast-grep`](https://ast-grep.github.io/) (`sg`) is needed only for tasks that rewrite a pattern across multiple call sites. |
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
 | `okf` | None required — scaffolds plain markdown and wires Claude Code hooks, both built in. Network access to fetch the OKF spec is helpful but not essential. |
-| `serana` | The Serena MCP server registered (`mcp__serena__*` tools); network access to fetch its client-setup and hooks docs; the `serena-hooks` CLI on PATH for the hooks step. |
 | `visual-spec` | The `artifact-design`, `artifact-diagramming`, `artifact-capabilities`, and `dataviz` skills, which ship bundled with Claude Code, plus `brainstorming` from the [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace. |
 
 ## Using a skill
