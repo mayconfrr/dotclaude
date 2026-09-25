@@ -8,6 +8,7 @@
   "permissions": {
     "defaultMode": "bypassPermissions"
   },
+  "model": "claude-opus-5-5",
   "hooks": {
     "Stop": [
       {
