@@ -1,7 +1,5 @@
 {
-  "env": {
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8"
-  },
+  "env": {},
   "attribution": {
     "commit": "",
     "pr": "",
@@ -10,7 +8,6 @@
   "permissions": {
     "defaultMode": "bypassPermissions"
   },
-  "model": "sonnet",
   "hooks": {
     "Stop": [
       {
@@ -53,8 +50,15 @@
       }
     }
   },
+  "feedbackDrafts": "off",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
+  "switchModelsOnFlag": false,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true
