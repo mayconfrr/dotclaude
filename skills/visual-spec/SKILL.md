@@ -1,6 +1,6 @@
 ---
 name: visual-spec
-description: Use when turning a stakeholder request, feature ask, bug, or rough requirements into a detailed, implementation-ready spec — especially when it will be committed as a markdown doc or opened as a GitHub issue. Trigger on "write a spec for", "create an issue for this request", "brainstorm and create an issue", "turn this into something a dev can implement/pick up", "make a visual spec", or any request to produce an implementable spec from a request, even when a visual artifact or these exact words aren't used.
+description: Use when turning a stakeholder request, feature ask, bug, or rough requirements into a detailed, implementation-ready spec — especially when it will be opened as a GitHub issue. Trigger on "write a spec for", "create an issue for this request", "brainstorm and create an issue", "turn this into something a dev can implement/pick up", "make a visual spec", or any request to produce an implementable spec from a request, even when a visual artifact or these exact words aren't used.
 ---
 
 # Visual Spec
@@ -9,9 +9,7 @@ description: Use when turning a stakeholder request, feature ask, bug, or rough 
 
 Turn a request into an **implementation-ready spec, presented as a designed, diagrammed Artifact**. The finished spec is self-contained: a fresh `/implement` session (or a teammate) must be able to pick it up cold and build the thing without re-interviewing anyone. Skip this skill when the change is already approved and unambiguous (just build it), or when the user wants a throwaway answer, not a durable spec.
 
-**Core principle: a spec is only done when every gap is either filled or explicitly left open by the user.** A silent `<TBD>` is a bug — it looks finished and isn't. The single behavior that separates a good spec from a wish list is *proactively hunting gaps and asking about them before writing the deliverable.*
-
-This skill orchestrates other skills; it does not replace them. Follow each one it calls.
+**Core principle: a spec is only done when every gap is either filled or explicitly left open by the user.** A silent `<TBD>` is a bug — it looks finished and isn't.
 
 ## The toolchain (which skills, and when)
 
@@ -21,18 +19,18 @@ This skill orchestrates other skills; it does not replace them. Follow each one 
 | `artifact-design` | **Always, before writing the artifact** | Calibrate treatment and build the page with real hierarchy, palette, both themes. |
 | `artifact-diagramming` | **Always** (a spec has a mechanism) | Draw the flow/mechanism the reader would otherwise assemble from prose. |
 | `dataviz` | **If** the spec carries any chart, metric, KPI row, or before/after numbers | Every chart goes through it; don't hand-roll chart colors. |
-| `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the md/issue version loses nothing. |
+| `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
 
 ## Process
 
-1. **Brainstorm** (`superpowers:brainstorming`). Classify (spike / bounded / architectural), understand purpose and constraints, agree on the shape of the deliverable. Confirm destination early: markdown file, GitHub issue, or both.
+1. **Brainstorm** (`superpowers:brainstorming`). Classify (spike / bounded / architectural), understand purpose and constraints, agree on the shape of the deliverable.
 2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down** — do not take the request's framing at face value. Requests describe *intent*; the code describes *reality*, and they diverge (one term in the request may map to two different mechanisms in the code; a field or value the request assumes exists may not; a constant in one place may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. (Skip only when there is genuinely no codebase yet — a greenfield project — and say so.)
 3. **Hunt gaps and ask** — see the discipline below.
 4. **Build the visual spec** as an Artifact, following the recipe below.
-5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up. Every new fact from the user gets folded in.
+5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
 6. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
-7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **second, stakeholder-facing Artifact** per `references/stakeholder-companion.md` (read it now): a companion to the technical spec, not a replacement. Publish it separately and hand over both. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
-8. **Ship on request** — see Shipping.
+7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **second, stakeholder-facing Artifact** per `references/stakeholder-companion.md` (read it now). Publish it separately and hand over both. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
+8. **Open the GitHub issue** — see Shipping.
 
 ## Gap discipline (the heart of this skill)
 
@@ -48,7 +46,7 @@ When a gap stays open by the user's choice, mark it as such in the spec (a **Pen
 |---|---|
 | "I'll put a placeholder and note it as TBD." | A silent TBD reads as finished. Ask first; only the user turns it into a deferred item. |
 | "The implementer can figure the ID out." | They can't — it lives in an external system the user can see and they can't. One question saves a blocked PR. |
-| "It's obvious from context." | The mix-up you narrowly avoided felt obvious too. Confirm the specific value. |
+| "It's obvious from context." | Mix-ups feel obvious until they ship. Confirm the specific value. |
 | "Asking is slower than just writing it." | Writing on a wrong assumption is slower — you rewrite the spec and the code. |
 | "I'll assume the common case." | Assumptions are how the two-mechanism / wrong-field-name bugs get baked in. Verify in code, then ask. |
 | "The request already says what to do." | The request states intent; it omits the values and is sometimes wrong about the mechanism. Ground and ask. |
@@ -78,8 +76,6 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 
 ## Shipping
 
-Ship only after approval (step 6), and produce the stakeholder companion (step 7) first. Confirming the destination in step 1 records intent, not the go-ahead.
+The issue is the spec's durable record; write no markdown file. Approval (step 6) is the go-ahead: once the stakeholder companion (step 7), if any, is done, open the issue.
 
-- **Markdown file:** author a committable `.md` twin of the spec (e.g., under `docs/specs/`), consistent with the artifact. Follow the repo's branch/PR conventions. Link the artifact URL.
-- **GitHub issue:** never open it proactively. Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact.
-- Either destination must stand alone — a cold reader implements from it without this conversation.
+Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact. The issue must stand alone — a cold reader implements from it without this conversation.
