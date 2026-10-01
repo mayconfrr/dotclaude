@@ -143,6 +143,12 @@ this phase — each task's review and the final whole-branch review — runs
 through `code-review` against that task's or that branch's diff; none of
 them use a bespoke reviewer prompt.
 
+Every review dispatch, in any phase, runs on Opus (`model: opus`) —
+including reviewers dispatched inside `security-review` and `simplify`,
+not only `code-review` calls. This overrides
+`subagent-driven-development`'s review-tier guidance. Implementers keep
+that skill's model selection.
+
 ### Isolate a parallel wave
 
 Serial tasks keep the one worktree. A wave of 2+ gets one worktree per task,
