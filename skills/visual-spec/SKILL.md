@@ -9,46 +9,44 @@ description: Use when turning a stakeholder request, feature ask, bug, or rough 
 
 Turn a request into an **implementation-ready spec, presented as a designed, diagrammed Artifact**. The finished spec is self-contained: a fresh `/implement` session (or a teammate) must be able to pick it up cold and build the thing without re-interviewing anyone. Skip this skill when the change is already approved and unambiguous (just build it), or when the user wants a throwaway answer, not a durable spec.
 
-**Core principle: a spec is only done when every gap is either filled or explicitly left open by the user.** A silent `<TBD>` is a bug — it looks finished and isn't.
-
 ## The toolchain (which skills, and when)
 
 | Skill | When | Role |
 |---|---|---|
-| `superpowers:brainstorming` | **Always, first** | Classify the request, understand intent, surface approaches. Do this before any exploration or writing. |
+| `superpowers:brainstorming` | **Always, first** | Process step 1. |
 | `artifact-design` | **Always, before writing the artifact** | Calibrate treatment and build the page with real hierarchy, palette, both themes. |
-| `diagram-design` | **Always** (a spec has a mechanism) | Draw the flow/mechanism the reader would otherwise assemble from prose. See "Diagrams" below. |
+| `diagram-design` | **Always** (a spec has a mechanism) | Draw the mechanism the reader would otherwise assemble from prose. See "Diagrams". |
 | `dataviz` | **If** the spec carries a KPI or metric row, a hero number, or a chart with 3+ equally weighted series | Validated palette, tooltips, table view. Every other chart (bar, line, Gantt, waterfall, funnel…) is a `diagram-design` type. Don't hand-roll chart colors. |
-| `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
+| `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Keep a static twin so the issue version loses nothing. |
 
-If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained, full HTML document (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
+If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained, full HTML document (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then has no artifact link.
 
 ## Language
 
-Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simplified Technical English. Read `references/ste.md` before you write. Quote the source request verbatim in its original language. Translate later, on request, from the STE text.
+Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simplified Technical English. Read `references/ste.md` before you write. Translate later, on request, from the STE text.
 
 ## Diagrams
 
-`diagram-design` is a user-scope plugin, not part of Claude Code. Load it as `diagram-design:diagram-design`. Set the four dials from its `references/output-spec.md`: Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder PDF). Draw nine nodes or fewer, and split a bigger flow into two diagrams. Generate the SVG with CSS classes, not literal hex colors. Map the plugin's `--d-paper`, `--d-ink`, `--d-muted`, `--d-soft` and `--d-accent` tokens, and any tints derived from them, to the page's theme tokens in both themes. Do not run the plugin's onboarding: it rewrites the plugin's own `style-guide.md`. Apply the page palette in your output and do not ask the user. Check each standalone diagram file with the plugin's `scripts/self_check.py` (the only check the installed plugin ships), then embed its `<svg>` in the page. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
+Load the plugin as `diagram-design:diagram-design`. Set the four dials from its `references/output-spec.md`: Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder PDF). Draw nine nodes or fewer, and split a bigger flow into two diagrams. Generate the SVG with CSS classes, not literal hex colors. Map the plugin's `--color-paper`, `--color-ink`, `--color-muted`, `--color-soft` and `--color-accent` tokens, and any tints derived from them, to the page's theme tokens in both themes. Do not run the plugin's onboarding: it rewrites the plugin's own `style-guide.md`. Apply the page palette in your output and do not ask the user. Check each standalone diagram file with the skill's `scripts/self_check.py`, then embed its `<svg>` in the page. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
 
 ## Process
 
-1. **Brainstorm** (`superpowers:brainstorming`). Classify (spike / bounded / architectural), understand purpose and constraints, agree on the shape of the deliverable.
+1. **Brainstorm** (`superpowers:brainstorming`), before any exploration or writing. Classify (spike / bounded / architectural), understand purpose and constraints, surface approaches, agree on the shape of the deliverable.
 2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down** — do not take the request's framing at face value. Requests describe *intent*; the code describes *reality*, and they diverge (one term in the request may map to two different mechanisms in the code; a field or value the request assumes exists may not; a constant in one place may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. (Skip only when there is genuinely no codebase yet — a greenfield project — and say so.)
 3. **Hunt gaps and ask** — see the discipline below.
 4. **Build the visual spec** as an Artifact, following the recipe below.
 5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
 6. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
-7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **stakeholder-facing PDF summary** per `references/stakeholder-companion.md` (read it now). It is a PDF only, never an Artifact. Hand over the PDF file path together with the spec link. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
+7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **stakeholder-facing PDF summary** per `references/stakeholder-companion.md` (read it now). Hand over the PDF file path together with the spec link. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
 8. **Open the GitHub issue** — see Shipping.
 
 ## Gap discipline (the heart of this skill)
 
 Before building the deliverable, write down every unknown the spec depends on — IDs, field/column names, payload formats, exact names, enum values, mechanism questions, "does X exist?", ownership, edge-case behavior — and **put them to the user.** The user very often has the answer on hand (an ID, a config value, a payload sample); asking turns a `<TBD>` into a real value in one message.
 
-**Only leave a gap open if the user explicitly says to.** "I don't know yet," "leave it," "that's a discovery item," "confirm later" — those are explicit. Silence is not. Your own judgment that a gap is "probably fine to defer" is not.
+**A spec is done only when every gap is filled or explicitly left open by the user.** "I don't know yet," "leave it," "that's a discovery item," "confirm later" — those are explicit. Silence is not. Your own judgment that a gap is "probably fine to defer" is not.
 
-When a gap stays open by the user's choice, mark it as such in the spec (a **Pending / Discovery** item with what's blocked on it), distinct from **Confirmed** values and from **Open decisions** the user still needs to make. Three different buckets — don't blur them.
+When a gap stays open by the user's choice, mark it as such in the spec (a **Pending / Discovery** item with what's blocked on it), distinct from **Confirmed** values and from **Open decisions** the user still needs to make.
 
 ### Rationalizations — all false
 
@@ -72,7 +70,7 @@ All of these mean: list the gap, ask the user, wait for the answer.
 
 ## Visual spec recipe
 
-Author as HTML per `artifact-design` (never Markdown as a shortcut past the design pass). Scale sections to the work; a small change doesn't need all of them. Several sections have a right and a wrong shape — Non-Goals, prioritized requirements, acceptance criteria, and (when the spec carries them) success metrics and user stories; `references/spec-sections.md` gives the shape of each — read it when you build those. A typical implementation-ready spec has:
+Author as HTML per `artifact-design` (never Markdown as a shortcut past the design pass). Scale sections to the work; a small change doesn't need all of them. Non-Goals, prioritized requirements, acceptance criteria and, when the spec carries them, success metrics and user stories have a required shape: read `references/spec-sections.md` when you build them. A typical implementation-ready spec has:
 
 - **Source request, verbatim.** The stakeholder/user's exact words, quoted, marked as the source of truth. Everything else derives from it.
 - **Metadata strip.** Surface (backend/frontend/config), modules touched, dependencies, scope at a glance.
@@ -84,10 +82,8 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 - **Acceptance criteria.** Checkable, per-case — Given/When/Then or checklist, covering error and negative cases.
 - **Confirmed values** vs **Pending/Discovery** vs **Open decisions** — three distinct buckets (see gap discipline); tag each open item with its owner (eng / design / product / legal).
 
-**Section sidebar.** Give the page a sidebar of section shortcuts, unless the spec has three sections or fewer. Use plain anchor links to each section `id`, with short labels that mirror the headings, and `scroll-margin-top` on the headings so a jump clears the page edge. The sidebar is sticky on wide screens. At phone width it collapses to an "On this page" disclosure, with no horizontal scroll. Highlighting the current section (an `IntersectionObserver`) is optional, and the links must work without JavaScript. Use smooth scrolling only under `prefers-reduced-motion: no-preference`. The sidebar takes the page theme tokens in both themes. The GitHub issue carries the spec text, so it has no sidebar.
+**Section sidebar.** Give the page a sidebar of section shortcuts, unless the spec has three sections or fewer. Use plain anchor links to each section `id`, with short labels that mirror the headings, and `scroll-margin-top` on the headings so a jump clears the page edge. The sidebar is sticky on wide screens. At phone width it collapses to an "On this page" disclosure, with no horizontal scroll. Highlighting the current section (an `IntersectionObserver`) is optional, and the links must work without JavaScript. Use smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue carries the spec text, so it has no sidebar.
 
 ## Shipping
 
-The issue is the spec's durable record; write no markdown file. Approval (step 6) is the go-ahead: once the stakeholder companion (step 7), if any, is done, open the issue.
-
-Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact. The issue must stand alone — a cold reader implements from it without this conversation.
+The issue is the spec's durable record; write no markdown file. Open it once step 7, if it applies, is done. Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact. The issue must stand alone — a cold reader implements from it without this conversation.
