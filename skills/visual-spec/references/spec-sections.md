@@ -55,8 +55,8 @@ has none — don't manufacture one. The stakeholder companion is the usual home 
 - **Leading** (days–weeks): adoption, activation, task-completion, error rate, usage frequency.
 - **Lagging** (weeks–months): retention, revenue, satisfaction/NPS, support-ticket reduction, win rate.
 - Targets are specific — "50% adoption within 30 days", not "high adoption" — with a measurement
-  method and an evaluation window. Set a success threshold and a stretch target. Route any chart
-  through `dataviz`.
+  method and an evaluation window. Set a success threshold and a stretch target. Route a KPI or metric
+  row through `dataviz`; draw any other chart with `diagram-design`.
 
 ## User stories (multi-persona or companion only)
 

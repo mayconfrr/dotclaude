@@ -18,7 +18,7 @@ Turn a request into an **implementation-ready spec, presented as a designed, dia
 | `superpowers:brainstorming` | **Always, first** | Classify the request, understand intent, surface approaches. Do this before any exploration or writing. |
 | `artifact-design` | **Always, before writing the artifact** | Calibrate treatment and build the page with real hierarchy, palette, both themes. |
 | `diagram-design` | **Always** (a spec has a mechanism) | Draw the flow/mechanism the reader would otherwise assemble from prose. See "Diagrams" below. |
-| `dataviz` | **If** the spec carries any chart, metric, KPI row, or before/after numbers | Every chart goes through it; don't hand-roll chart colors. |
+| `dataviz` | **If** the spec carries a KPI or metric row, a hero number, or a chart with 3+ equally weighted series | Validated palette, tooltips, table view. Every other chart (bar, line, Gantt, waterfall, funnel…) is a `diagram-design` type. Don't hand-roll chart colors. |
 | `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
 
 If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained HTML file (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
