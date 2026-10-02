@@ -1,5 +1,5 @@
 ---
-name: sync-skills
+name: skill-sync
 description: Use when `.skill` packages published as GitHub release assets should replace the same-named custom skills on claude.ai, or add new skills the user names — after a skills repo merge, when claude.ai is behind the repo, or when asked to sync, push, upload, update, or refresh skills on claude.ai from a GitHub release.
 ---
 
@@ -7,7 +7,7 @@ description: Use when `.skill` packages published as GitHub release assets shoul
 
 Replace custom skills on claude.ai with the `.skill` assets of a GitHub release. Each asset's file name (minus `.skill`) is the skill name. Skill IDs and the UI language are discovered at runtime.
 
-**Announce at start:** "Using sync-skills. I'll show what will be replaced or added before uploading anything."
+**Announce at start:** "Using skill-sync. I'll show what will be replaced or added before uploading anything."
 
 **Prerequisites:** `gh` authenticated, and the Claude in Chrome tools. Invoke the `claude-in-chrome` skill and load its tools before any browser call.
 
