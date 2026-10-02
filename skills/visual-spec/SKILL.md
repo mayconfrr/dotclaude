@@ -17,9 +17,13 @@ Turn a request into an **implementation-ready spec, presented as a designed, dia
 |---|---|---|
 | `superpowers:brainstorming` | **Always, first** | Classify the request, understand intent, surface approaches. Do this before any exploration or writing. |
 | `artifact-design` | **Always, before writing the artifact** | Calibrate treatment and build the page with real hierarchy, palette, both themes. |
-| `artifact-diagramming` | **Always** (a spec has a mechanism) | Draw the flow/mechanism the reader would otherwise assemble from prose. |
+| `diagram-design` | **Always** (a spec has a mechanism) | Draw the flow/mechanism the reader would otherwise assemble from prose. See "Diagrams" below. |
 | `dataviz` | **If** the spec carries any chart, metric, KPI row, or before/after numbers | Every chart goes through it; don't hand-roll chart colors. |
 | `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
+
+## Diagrams
+
+`diagram-design` is a user-scope plugin, not part of Claude Code. Ask it for Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder companion). Embed the `<svg>` it generates in the page, with its paper/ink/accent tokens pointed at the page's theme tokens so both themes follow the page. Answer its first-run style-guide prompt with the page palette instead of asking the user. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
 
 ## Process
 
@@ -67,7 +71,7 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 - **Source request, verbatim.** The stakeholder/user's exact words, quoted, marked as the source of truth. Everything else derives from it.
 - **Metadata strip.** Surface (backend/frontend/config), modules touched, dependencies, scope at a glance.
 - **Current state, grounded.** How it works today, with `file:line` references and the mechanism distinctions that matter. This is where code-grounding pays off.
-- **Mechanism diagram(s)** (`artifact-diagramming`). Draw the flow, the data that moves, the thing that changes — highlight the delta in one accent color. Label the arrows.
+- **Mechanism diagram(s)** (`diagram-design`). Draw the flow, the data that moves, the thing that changes — highlight the delta in one accent color. Label the arrows.
 - **The change, itemized.** Per feature / case / rule: exact behavior, the config or code that expresses it, and the real values. Tag each item P0 / P1 / P2.
 - **Non-Goals.** Out-of-scope items, each with why — the boundary that keeps scope from creeping.
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).

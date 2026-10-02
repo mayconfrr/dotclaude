@@ -23,7 +23,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
 | `okf` | None required — scaffolds plain markdown and wires Claude Code hooks, both built in. Network access to fetch the OKF spec is helpful but not essential. |
 | `skill-sync` | The [`gh`](https://cli.github.com/) CLI and the Claude in Chrome extension, signed in to claude.ai in that browser. |
-| `visual-spec` | The `artifact-design`, `artifact-diagramming`, `artifact-capabilities`, and `dataviz` skills, which ship bundled with Claude Code, plus `brainstorming` from the [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace. |
+| `visual-spec` | The `artifact-design`, `artifact-capabilities`, and `dataviz` skills, which ship bundled with Claude Code, the [`diagram-design`](https://github.com/cathrynlavery/diagram-design) plugin (`claude plugin marketplace add cathrynlavery/diagram-design`, then `claude plugin install diagram-design@diagram-design`), plus `brainstorming` from the [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace. |
 
 ## Using a skill
 
