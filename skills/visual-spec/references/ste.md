@@ -1,5 +1,7 @@
 # ASD-STE100 style for the spec and the stakeholder PDF
 
+Apply it to prose, table cells, headings, diagram labels and captions. Do not apply it to code or `file:line` references.
+
 This file holds the writing rules. The standard also has an approved dictionary. This skill does not embed it. Apply the rules below, choose common simple words, and do not say the text is "STE compliant".
 
 ## Classify each passage first
@@ -7,6 +9,7 @@ This file holds the writing rules. The standard also has an approved dictionary.
 - **Procedural text** (steps, instructions, acceptance steps): imperative mood, **20 words or fewer** per sentence, one instruction per sentence (unless the actions happen at the same time). Put the condition before the instruction.
 - **Descriptive text** (current state, rationale, impact, boundaries): simple tenses, **25 words or fewer** per sentence, one topic per paragraph.
 - Do not mix the two in one passage.
+- Treat each Given/When/Then cell as procedural text of 20 words or fewer.
 
 ## Rules
 
@@ -22,7 +25,7 @@ This file holds the writing rules. The standard also has an approved dictionary.
 ## What stays exact
 
 - Code, identifiers, file paths, `file:line` references, config keys and values stay exact and in code font. They are technical names. Do not simplify them.
-- Define each domain term once at its first use (for example `grace period`), then use it the same way every time. A defined term is a technical name.
+- Define each domain term once at its first use (for example `grace period`), then use it the same way every time. A defined term is a technical name and is exempt from rule 4, even when it ends in -ing.
 - Quote the **source request** verbatim, in its original language, even when it is not English. Everything else is STE.
 
 ## Check before you hand over
