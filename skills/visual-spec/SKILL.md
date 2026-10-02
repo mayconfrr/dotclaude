@@ -42,9 +42,9 @@ Load the plugin as `diagram-design:diagram-design`. Set the four dials from its 
 
 Before building the deliverable, write down every unknown the spec depends on — IDs, field/column names, payload formats, exact names, enum values, mechanism questions, "does X exist?", ownership, edge-case behavior — and **put them to the user.** They often have the answer on hand (an ID, a config value, a payload sample).
 
-**A spec is done only when every gap is filled or explicitly left open by the user.** "I don't know yet," "leave it," "that's a discovery item," "confirm later" — those are explicit. Silence is not. Your own judgment that a gap is "probably fine to defer" is not.
+**A spec is done only when every gap is filled or explicitly left open by the user.** "I don't know yet," "leave it," "that's a discovery item," "confirm later" — those are explicit. Silence is not. Your own judgment that a gap is "probably fine to defer" is not. A value you inferred is not **Confirmed**: it stays a gap until the user answers.
 
-When a gap stays open by the user's choice, mark it as such in the spec (a **Pending / Discovery** item with what's blocked on it), distinct from **Confirmed** values and from **Open decisions** the user still needs to make.
+When the user leaves a gap open, record it in the spec as a **Pending / Discovery** item with what it blocks.
 
 ### Rationalizations — all false
 
@@ -78,10 +78,10 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 - **Non-Goals.** The boundary that keeps scope from creeping.
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).
 - **Acceptance criteria.** Checkable, per case, including error and negative cases.
-- **Confirmed values** vs **Pending/Discovery** vs **Open decisions** — three distinct buckets; tag each open item with its owner (eng / design / product / legal).
+- **Confirmed values** (user-confirmed), **Pending/Discovery** (gaps the user left open) and **Open decisions** (choices the user still needs to make) — three distinct buckets; tag each open item with its owner (eng / design / product / legal).
 
 **Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`, with short labels that mirror the headings and `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" disclosure that opens as an overlay, so closing it does not shift the page. There is no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. The links must work without JavaScript; highlighting the current section (an `IntersectionObserver`) is optional. Use smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
 
 ## Shipping
 
-The issue is the spec's durable record; write no markdown file. Open it once step 7, if it applies, is done. Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact. The issue must stand alone — a cold reader implements from it without this conversation.
+The issue is the spec's durable record; write no markdown file. Open it ready-for-review (not draft). Check for an issue/PR template and mirror its headings. Bake **confirmed values** in; keep Pending/Open buckets visible so `/implement` knows what's still blocked. Link the artifact. The issue must stand alone — a cold reader implements from it without this conversation.

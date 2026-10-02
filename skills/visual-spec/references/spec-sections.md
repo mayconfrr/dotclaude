@@ -2,9 +2,8 @@
 
 Loaded from the Visual spec recipe when you build one of these sections.
 
-The PM-framing sections — user stories, success metrics — usually belong in the
-[stakeholder companion](stakeholder-companion.md), not the technical spec; use them here only when
-the technical spec itself needs them.
+User stories and success metrics usually belong in the [stakeholder companion](stakeholder-companion.md);
+use them in the technical spec only when it needs them.
 
 ## Non-Goals
 
@@ -17,15 +16,13 @@ in a few words, why — low impact, too complex, a separate initiative, prematur
 
 ## Prioritized requirements (P0 / P1 / P2)
 
-Categorize every requirement. Be ruthless about P0 — a tighter must-have list ships and teaches faster.
+Categorize every requirement. Be ruthless about P0.
 
 | Tier | Label | Test |
 |---|---|---|
 | **P0** | Must-have | "If we cut this, does it still solve the core problem?" No → P0. |
 | **P1** | Nice-to-have | Materially better, but the core use case works without it. Fast-follow material, not a wish list. |
 | **P2** | Future | Out of scope for v1, but the design should not foreclose it. Architectural insurance. |
-
-"If everything is P0, nothing is P0" — challenge each must-have: would we really not ship without it?
 
 ## Acceptance criteria
 
@@ -59,6 +56,5 @@ has none — don't manufacture one.
 Skip for a single-mechanism technical change. Use when the change serves distinct personas, or in the
 companion. Format: "As a [specific user type], I want [capability] so that [benefit]" — the type
 specific ("enterprise admin", not "user"), the capability a goal not a UI widget, the benefit the why.
-Order by priority; include error/empty/boundary states. Common misses: too vague,
-solution-prescriptive ("a dropdown"), no benefit, too large, or internally framed ("we want to
-refactor the DB" — that's a task, not a story).
+Order by priority; include error/empty/boundary states. Also avoid stories that are too large or internally framed ("we want to
+refactor the DB" is a task, not a story).
