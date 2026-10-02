@@ -21,7 +21,7 @@ Turn a request into an **implementation-ready spec, presented as a designed, dia
 | `dataviz` | **If** the spec carries a KPI or metric row, a hero number, or a chart with 3+ equally weighted series | Validated palette, tooltips, table view. Every other chart (bar, line, Gantt, waterfall, funnel…) is a `diagram-design` type. Don't hand-roll chart colors. |
 | `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
 
-If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained HTML file (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
+If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained, full HTML document (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
 
 ## Language
 
@@ -29,7 +29,7 @@ Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simpli
 
 ## Diagrams
 
-`diagram-design` is a user-scope plugin, not part of Claude Code. Ask it for Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder companion). Embed the `<svg>` it generates in the page, with its paper/ink/accent tokens pointed at the page's theme tokens so both themes follow the page. Answer its first-run style-guide prompt with the page palette instead of asking the user. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
+`diagram-design` is a user-scope plugin, not part of Claude Code. Load it as `diagram-design:diagram-design`. Set the four dials from its `references/output-spec.md`: Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder PDF). Draw nine nodes or fewer, and split a bigger flow into two diagrams. Generate the SVG with CSS classes, not literal hex colors. Map the plugin's `--d-paper`, `--d-ink`, `--d-muted`, `--d-soft` and `--d-accent` tokens, and any tints derived from them, to the page's theme tokens in both themes. Do not run the plugin's onboarding: it rewrites the plugin's own `style-guide.md`. Apply the page palette in your output and do not ask the user. Check each standalone diagram file with the plugin's `scripts/self_check.py` (the only check the installed plugin ships), then embed its `<svg>` in the page. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
 
 ## Process
 
