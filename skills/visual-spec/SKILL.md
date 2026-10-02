@@ -23,6 +23,10 @@ Turn a request into an **implementation-ready spec, presented as a designed, dia
 
 If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained HTML file (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
 
+## Language
+
+Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simplified Technical English. Read `references/ste.md` before you write. Quote the source request verbatim in its original language. Translate later, on request, from the STE text.
+
 ## Diagrams
 
 `diagram-design` is a user-scope plugin, not part of Claude Code. Ask it for Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder companion). Embed the `<svg>` it generates in the page, with its paper/ink/accent tokens pointed at the page's theme tokens so both themes follow the page. Answer its first-run style-guide prompt with the page palette instead of asking the user. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
@@ -35,7 +39,7 @@ If `artifact-design` or the Artifact tool is unavailable, write the spec as one 
 4. **Build the visual spec** as an Artifact, following the recipe below.
 5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
 6. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
-7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **second, stakeholder-facing Artifact** per `references/stakeholder-companion.md` (read it now). Publish it separately and hand over both. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
+7. **Stakeholder companion (on approval, when there's an audience for it).** Once the spec is approved, if the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **stakeholder-facing PDF summary** per `references/stakeholder-companion.md` (read it now). It is a PDF only, never an Artifact. Hand over the PDF file path together with the spec link. For an internal-only change with no such audience, skip this — don't manufacture a reader who isn't there.
 8. **Open the GitHub issue** — see Shipping.
 
 ## Gap discipline (the heart of this skill)
@@ -79,6 +83,8 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).
 - **Acceptance criteria.** Checkable, per-case — Given/When/Then or checklist, covering error and negative cases.
 - **Confirmed values** vs **Pending/Discovery** vs **Open decisions** — three distinct buckets (see gap discipline); tag each open item with its owner (eng / design / product / legal).
+
+**Section sidebar.** Give the page a sidebar of section shortcuts, unless the spec has three sections or fewer. Use plain anchor links to each section `id`, with short labels that mirror the headings, and `scroll-margin-top` on the headings so a jump clears the page edge. The sidebar is sticky on wide screens. At phone width it collapses to an "On this page" disclosure, with no horizontal scroll. Highlighting the current section (an `IntersectionObserver`) is optional, and the links must work without JavaScript. Use smooth scrolling only under `prefers-reduced-motion: no-preference`. The sidebar takes the page theme tokens in both themes. The GitHub issue carries the spec text, so it has no sidebar.
 
 ## Shipping
 
