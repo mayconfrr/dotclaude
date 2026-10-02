@@ -21,6 +21,8 @@ Turn a request into an **implementation-ready spec, presented as a designed, dia
 | `dataviz` | **If** the spec carries any chart, metric, KPI row, or before/after numbers | Every chart goes through it; don't hand-roll chart colors. |
 | `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Optional. Keep a static twin so the issue version loses nothing. |
 
+If `artifact-design` or the Artifact tool is unavailable, write the spec as one self-contained HTML file (CSS variables for light and dark, inline SVG), save it locally, and tell the user its path. The issue then carries the full spec and has no artifact link.
+
 ## Diagrams
 
 `diagram-design` is a user-scope plugin, not part of Claude Code. Ask it for Format `html`, Size `doc-inline`, Detail `balanced`, and Audience `engineer` (technical spec) or `executive` (stakeholder companion). Embed the `<svg>` it generates in the page, with its paper/ink/accent tokens pointed at the page's theme tokens so both themes follow the page. Answer its first-run style-guide prompt with the page palette instead of asking the user. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
