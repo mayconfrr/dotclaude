@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; [ -n \"$SID\" ] && [ -f \"$MARKER\" ] && { rm -f \"$MARKER\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or CLAUDE.md file was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; [ -n \"$SID\" ] && [ -f \"$MARKER\" ] && { rm -f \"$MARKER\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or an instruction file (CLAUDE.md, AGENTS.md, or a .local variant) was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); [ -n \"$SID\" ] && printf '%s' \"$IN\" | grep -qE '\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md)\"' && touch \"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; true"
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); [ -n \"$SID\" ] && printf '%s' \"$IN\" | grep -qE '\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md|CLAUDE\\.local\\.md|AGENTS\\.md|AGENTS\\.local\\.md)\"' && touch \"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; true"
           }
         ]
       }

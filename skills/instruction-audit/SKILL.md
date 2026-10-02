@@ -1,11 +1,11 @@
 ---
 name: instruction-audit
-description: Use when asked to audit, clean up, lean, compact, or reduce a skill file, CLAUDE.md, or the instruction text in hooks (a settings.json hooks block or a hook reference doc) — or when one reads like a record of how it was built, or is simply longer than it needs to be. `/instruction-audit install` or `hook` is a separate command, covered in the Procedure section — it does not audit anything.
+description: Use when asked to audit, clean up, lean, compact, or reduce a skill file, CLAUDE.md or AGENTS.md (including their .local variants), or the instruction text in hooks (a settings.json hooks block or a hook reference doc) — or when one reads like a record of how it was built, or is simply longer than it needs to be. `/instruction-audit install` or `hook` is a separate command, covered in the Procedure section — it does not audit anything.
 ---
 
 # Instruction Audit
 
-A skill or CLAUDE.md is a recipe, not a lab notebook. State the correct
+A skill or CLAUDE.md/AGENTS.md is a recipe, not a lab notebook. State the correct
 procedure, as compactly as it can be stated correctly; don't narrate the
 wrong turns taken to find it.
 
@@ -31,7 +31,7 @@ wrong turns taken to find it.
   the skill was written against, not for every project it will run
   against. Generalize to the underlying principle, or cut it. A
   project-scoped skill (`<project>/.claude/skills`) or a project's
-  `CLAUDE.md` is exempt — project facts are exactly what it's for.
+  `CLAUDE.md`/`AGENTS.md` is exempt — project facts are exactly what it's for.
 - **Any phrase sayable in fewer words with the same meaning.** This is not
   a style pass done once at the end — check it on every paragraph you
   touch, cut and keep alike. Dropping a qualifier that narrows or hedges
@@ -100,7 +100,7 @@ carry project facts, but a hook doc a global skill ships must generalize them.
 
 ## Frontmatter and structure rules
 
-Applies to a `SKILL.md`'s YAML frontmatter and file layout; a `CLAUDE.md`
+Applies to a `SKILL.md`'s YAML frontmatter and file layout; a `CLAUDE.md`/`AGENTS.md`
 or a hooks target has neither, so skip this section for those.
 
 - **Required fields**: `name` and `description`, both strings. The only
@@ -123,7 +123,7 @@ or a hooks target has neither, so skip this section for those.
 reminder hook below and stop — don't audit anything.
 
 **Invoked any other way:** audit the given target — a skill file, a
-`CLAUDE.md`, or hooks (a project's `settings.json` `hooks` block, or a doc
+`CLAUDE.md`/`AGENTS.md` (or a `.local` variant), or hooks (a project's `settings.json` `hooks` block, or a doc
 that documents hooks). Do not install or modify the reminder hook below as
 part of an ordinary audit — that belongs to the `install`/`hook` command
 alone.
@@ -148,7 +148,7 @@ inline — but still treat the file as a stranger's.
 1. Read the file in full. If the target is a `settings.json` hooks block or a
    doc that documents hooks, also read "Auditing hooks."
 2. Note where it lives: global (`~/.claude/skills`, claude.ai), project
-   `CLAUDE.md`/`AGENTS.md`, project-scoped skill (`<project>/.claude/skills`),
+   `CLAUDE.md`/`AGENTS.md` (and `.local` variants), project-scoped skill (`<project>/.claude/skills`),
    or a `settings.json` hooks block (`~/.claude/settings.json` global,
    `<project>/.claude/settings.json` project). Only a global skill — or a
    global `settings.json` — needs the project-specific-fact bullet in "What to
@@ -172,14 +172,14 @@ inline — but still treat the file as a stranger's.
 
 Installed globally, on demand, by `/instruction-audit install` (or `hook`) — never
 as a side effect of an ordinary audit. Two hooks work together: `PostToolUse`
-marks that a `SKILL.md`/`CLAUDE.md` edit happened, `Stop` fires the reminder
+marks that a `SKILL.md`, `CLAUDE.md`, `AGENTS.md` or `.local` variant edit happened, `Stop` fires the reminder
 once per turn and clears the mark. This detects the edit at the moment it
 happens rather than scanning the transcript for it afterward — on a long
 call chain, enough tool output after the edit can push it past any bounded
 scan window, so scanning can silently miss it; detecting it live cannot.
 
 Check `~/.claude/settings.json` for both hooks already present and matching
-the versions below (covering both `SKILL.md` and `CLAUDE.md`); skip only
+the versions below (covering `SKILL.md`, `CLAUDE.md`, `AGENTS.md` and the `.local` variants); skip only
 then. A `Stop`-only hook that scans the transcript, or one covering
 `SKILL.md` alone, is the stale prior design — replace it. Merge these in
 without replacing any existing `hooks` arrays. Assumes a POSIX shell (on
@@ -194,7 +194,7 @@ assume `jq` is on this machine:
         "hooks": [
           {
             "type": "command",
-            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); [ -n \"$SID\" ] && printf '%s' \"$IN\" | grep -qE '\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md)\"' && touch \"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; true"
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); [ -n \"$SID\" ] && printf '%s' \"$IN\" | grep -qE '\"file_path\":\"[^\"]*(SKILL\\.md|CLAUDE\\.md|CLAUDE\\.local\\.md|AGENTS\\.md|AGENTS\\.local\\.md)\"' && touch \"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; true"
           }
         ]
       }
@@ -204,7 +204,7 @@ assume `jq` is on this machine:
         "hooks": [
           {
             "type": "command",
-            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; [ -n \"$SID\" ] && [ -f \"$MARKER\" ] && { rm -f \"$MARKER\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or CLAUDE.md file was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
+            "command": "IN=$(cat); SID=$(printf '%s' \"$IN\" | sed -n 's/.*\"session_id\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"${TMPDIR:-/tmp}/instruction-audit-pending-$SID\"; [ -n \"$SID\" ] && [ -f \"$MARKER\" ] && { rm -f \"$MARKER\"; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"A SKILL.md or an instruction file (CLAUDE.md, AGENTS.md, or a .local variant) was edited this turn. Once every change to it is done, run instruction-audit on it.\"}}'; }; true"
           }
         ]
       }
@@ -215,7 +215,7 @@ assume `jq` is on this machine:
 `PostToolUse`'s `matcher` restricts it to `Edit`/`Write` calls; its command
 reads `tool_input.file_path` and `session_id` straight from its own JSON —
 no transcript involved — and touches a session-scoped marker file when the
-path ends in `SKILL.md` or `CLAUDE.md`. `Stop` reads the same `session_id`,
+path ends in `SKILL.md`, `CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md` or `AGENTS.local.md`. `Stop` reads the same `session_id`,
 checks for that marker, fires once, and deletes it — so a file edited
 several times in one turn still triggers only one reminder, and a later
 `Stop` with nothing new stays silent. Scoping the marker to `session_id`
@@ -223,7 +223,7 @@ keeps concurrent sessions on the same machine from tripping each other's
 reminder.
 
 Pipe-test both commands before installing: feed `PostToolUse` a synthetic
-`Edit`/`Write` JSON line targeting `SKILL.md`/`CLAUDE.md` and confirm the
+`Edit`/`Write` JSON line targeting each covered filename and confirm the
 marker appears, then one targeting an unrelated file and confirm it
 doesn't. Feed `Stop` a matching `session_id` and confirm it fires once and
 clears the marker, then feed it again and confirm it now stays silent.
