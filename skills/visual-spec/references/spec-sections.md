@@ -1,12 +1,10 @@
 # Spec sections — section-by-section guidance
 
-Loaded from the Visual spec recipe when you build one of these sections — each below matches a
-section named there.
+Loaded from the Visual spec recipe when you build one of these sections.
 
 The PM-framing sections — user stories, success metrics — usually belong in the
 [stakeholder companion](stakeholder-companion.md), not the technical spec; use them here only when
-the technical spec itself needs them. Adapted from `anthropics/knowledge-work-plugins`
-(`product-management/write-spec`), retargeted from a product PRD to a code-grounded implementation spec.
+the technical spec itself needs them.
 
 ## Non-Goals
 
@@ -35,28 +33,26 @@ Checkable, per case. Two formats — pick per criterion:
 
 **Given / When / Then** — for behavior with a precondition:
 - Given [precondition/context] · When [user action] · Then [expected outcome]
-- e.g. Given SSO is configured for the org · When a member hits the login page · Then they're redirected to the org's SSO provider.
+- e.g. Given SSO is configured for the org · When a member opens the login page · Then the system redirects the member to the org's SSO provider.
 
 **Checklist** — for a set of discrete, independently-true facts:
 - [ ] Admin can enter the SSO provider URL in org settings
-- [ ] A failed SSO attempt shows a clear error message
+- [ ] A failed SSO attempt shows an error message that names the cause
 
 Rules:
 - Cover happy path, error cases, and edge cases — and state what must **not** happen (negative cases).
 - Specify behavior, not implementation. Each criterion independently testable.
 - Ban ambiguous words — "fast", "user-friendly", "intuitive" — define them concretely or cut them.
-- Optional: a live checklist reviewers tick via `artifact-capabilities` — keep a static twin.
 
 ## Success metrics (when the spec carries them)
 
 Only when the change has a measurable outcome the reader will track; a pure mechanism change often
-has none — don't manufacture one. The stakeholder companion is the usual home for these.
+has none — don't manufacture one.
 
 - **Leading** (days–weeks): adoption, activation, task-completion, error rate, usage frequency.
 - **Lagging** (weeks–months): retention, revenue, satisfaction/NPS, support-ticket reduction, win rate.
 - Targets are specific — "50% adoption within 30 days", not "high adoption" — with a measurement
-  method and an evaluation window. Set a success threshold, and a stretch target only if the request gives one. Route a KPI or metric
-  row through `dataviz`; draw any other chart with `diagram-design`.
+  method and an evaluation window. Set a success threshold, and a stretch target only if the request gives one.
 
 ## User stories (multi-persona or companion only)
 

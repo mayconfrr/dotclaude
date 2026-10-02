@@ -1,8 +1,8 @@
 # ASD-STE100 style for the spec and the stakeholder PDF
 
-Apply it to prose, table cells, headings, diagram labels and captions. Do not apply it to code or `file:line` references.
+Apply it to prose, table cells, headings, diagram labels and captions.
 
-This file holds the writing rules. The standard also has an approved dictionary. This skill does not embed it. Apply the rules below, choose common simple words, and do not say the text is "STE compliant".
+The standard's approved dictionary is not embedded. Apply the rules below, choose common simple words, and do not say the text is "STE compliant".
 
 ## Classify each passage first
 
