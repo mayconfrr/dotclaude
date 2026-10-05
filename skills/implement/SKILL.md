@@ -24,7 +24,7 @@ written — do not re-derive it, do not soften it.
 | `superpowers:test-driven-development` | inside every task | implementer, via dispatch prompt |
 | `superpowers:systematic-debugging` | any failure, any phase, incl. CI | both |
 | `superpowers:verification-before-completion` | before every claim | both |
-| `code-review` (bundled with Claude Code; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
+| `code-review` (bundled; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
 | `security-review` | end of Phase 4, before `simplify` | controller |
 | `simplify` | end of Phase 4, after `security-review` | controller |
@@ -79,12 +79,12 @@ Hidden complexity upgrades bounded → architectural.
 
 ### Diagnose
 
-A bug run designs nothing until it has a repro. Build one command (a test,
-a curl, a script) that drives the reported code path and asserts the
-user's exact symptom, run it, and ledger the invocation and its redacted
-output. It must be fast and deterministic; a flaky bug gets a pinned, high
-reproduction rate instead (loop the trigger, add stress). A performance bug
-gets a baseline measurement in place of the assertion.
+A bug run designs nothing until it has a repro: one fast, deterministic
+command (a test, a curl, a script) that drives the reported code path and
+asserts the user's exact symptom. Run it and ledger the invocation and its
+redacted output. A flaky bug gets a pinned, high reproduction rate instead
+(loop the trigger, add stress); a performance bug gets a baseline measurement
+in place of the assertion.
 
 Cut the repro down one element at a time until removing any remaining one
 turns it green.
@@ -93,11 +93,10 @@ Rank 3–5 hypotheses, each stated as a prediction ("if X is the cause,
 changing Y makes it vanish"), and test them in rank order, one variable per
 probe. The survivor is the Ruling; each eliminated one fills its
 alternatives field. The minimised repro becomes task 1's RED test, and the
-fix then plans as bounded or architectural like any other change.
+fix then plans as bounded or architectural.
 
-No seam exercises the bug's real call pattern? Write no shallow stand-in
-test. The missing seam is a Ruling and an architecture note in
-`## Decisions`.
+If no seam exercises the bug's real call pattern, write no shallow stand-in
+test; the missing seam is a Ruling and an architecture note in `## Decisions`.
 
 ## Phase 2 — Plan
 
@@ -106,9 +105,9 @@ Skip the execution-mode question — always `subagent-driven-development`.
 Every task carries `Files:` and `Interfaces:` blocks. A plan without them runs
 fully serial.
 
-Every task also carries a `Seams:` block: the public interfaces its tests
-drive. Task review treats a test that reaches past them (a mocked internal
-collaborator, a private method, a side-channel read) as a finding.
+Every task also carries a `Seams:` block naming the public interfaces its
+tests drive. Task review flags a test that reaches past them (a mocked
+internal collaborator, a private method, a side-channel read).
 
 An `Interfaces:` entry that changes a signature or schema with existing
 callers plans the expand step and the contract step as two lines, not one —
@@ -385,9 +384,9 @@ already ran from a clean tree independent of CI, is the green evidence here;
 skip straight to handling review comments, next.
 
 On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
-root cause, commit, push, watch again. A check that fails intermittently
-gets looped to measure its failure rate before any ruling; that rate is the
-evidence in a fix or a handoff.
+root cause, commit, push, watch again. Loop an intermittent failure to
+measure its failure rate before any ruling; that rate is the evidence in a
+fix or a handoff.
 
 Handle review comments under `superpowers:receiving-code-review` as they
 arrive — on cloud the run is auto-subscribed to the PR, so a comment wakes it
@@ -405,9 +404,9 @@ off). A later comment resumes it in the preserved worktree.
 `## Decisions` is exhaustive or the run is unreviewable — a human reviewing
 the PR sees the PR, not a ledger deleted at Finish.
 
-Everything the run publishes (PR body, comment replies, handoffs, log
-excerpts) carries `<REDACTED>` in place of any secret, token or credential.
-Quote only the log lines that carry the signal.
+In everything the run publishes (PR body, comment replies, handoffs, log
+excerpts), replace any secret, token or credential with `<REDACTED>`. Quote
+only the log lines that carry the signal.
 
 ## Hard stops
 
