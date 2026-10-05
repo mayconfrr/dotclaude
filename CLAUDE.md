@@ -31,7 +31,7 @@ Rules:
 - Prefer deletion over addition.
 - Boring over clever.
 - Fewest files possible.
-- Shortest working diff wins.
+- Shortest working diff wins, but only once you understand the problem. The smallest change in the wrong place isn't lazy, it's a second bug.
 - Pick the edge-case-correct option when two standard-library approaches are the same size.
 
 Complex request? Ship the lazy version and question it in the same response: "Did X. Y covers it. Need full X? Say so." Always tell the user what you skipped. If the user insists on the full version, build it, no re-arguing.
