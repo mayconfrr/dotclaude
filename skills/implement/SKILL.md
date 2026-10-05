@@ -16,7 +16,6 @@ written — do not re-derive it, do not soften it.
 
 | Skill | When | Invoked by |
 |---|---|---|
-| `superpowers:using-superpowers` | governs the run | already loaded |
 | `superpowers:brainstorming` | Phase 1 | controller |
 | `superpowers:writing-plans` | Phase 2 | controller |
 | `superpowers:using-git-worktrees` | Phase 3 setup | controller |
@@ -25,7 +24,7 @@ written — do not re-derive it, do not soften it.
 | `superpowers:test-driven-development` | inside every task | implementer, via dispatch prompt |
 | `superpowers:systematic-debugging` | any failure, any phase, incl. CI | both |
 | `superpowers:verification-before-completion` | before every claim | both |
-| `code-review` | Phases 3 and 4 | controller |
+| `code-review` (bundled with Claude Code; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
 | `security-review` | end of Phase 4, before `simplify` | controller |
 | `simplify` | end of Phase 4, after `security-review` | controller |
@@ -58,6 +57,7 @@ Run resume-detection first, then read the entry point off the filesystem.
 | SDD ledger whose first line names this plan | Phase 3, resume at first task with no `complete` line |
 | Plan in `docs/superpowers/plans/` | Phase 3 |
 | Spec, no plan | Phase 2 |
+| Bug report: a `bug` label, or the request names a symptom | Phase 1, diagnose |
 | Neither; the flow being changed already exists here | Phase 1, bounded |
 | Neither; new subsystem | Phase 1, architectural |
 
@@ -77,12 +77,38 @@ spec, run brainstorming's self-review, commit, continue.
 
 Hidden complexity upgrades bounded → architectural.
 
+### Diagnose
+
+A bug run designs nothing until it has a repro. Build one command (a test,
+a curl, a script) that drives the reported code path and asserts the
+user's exact symptom, run it, and ledger the invocation and its redacted
+output. It must be fast and deterministic; a flaky bug gets a pinned, high
+reproduction rate instead (loop the trigger, add stress). A performance bug
+gets a baseline measurement in place of the assertion.
+
+Cut the repro down one element at a time until removing any remaining one
+turns it green.
+
+Rank 3–5 hypotheses, each stated as a prediction ("if X is the cause,
+changing Y makes it vanish"), and test them in rank order, one variable per
+probe. The survivor is the Ruling; each eliminated one fills its
+alternatives field. The minimised repro becomes task 1's RED test, and the
+fix then plans as bounded or architectural like any other change.
+
+No seam exercises the bug's real call pattern? Write no shallow stand-in
+test. The missing seam is a Ruling and an architecture note in
+`## Decisions`.
+
 ## Phase 2 — Plan
 
 Skip the execution-mode question — always `subagent-driven-development`.
 
 Every task carries `Files:` and `Interfaces:` blocks. A plan without them runs
 fully serial.
+
+Every task also carries a `Seams:` block: the public interfaces its tests
+drive. Task review treats a test that reaches past them (a mocked internal
+collaborator, a private method, a side-channel read) as a finding.
 
 An `Interfaces:` entry that changes a signature or schema with existing
 callers plans the expand step and the contract step as two lines, not one —
@@ -242,6 +268,13 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 + Before writing your status line, invoke
 +   superpowers:verification-before-completion.
 
++ Tests drive only the task's Seams:. Expected values come from an
++   independent source (a literal, a worked example, the spec), never
++   recomputed the way the code computes them.
+
++ Prefix every temporary debug log with [DEBUG-<task>]. Before your
++   status line, grep for the prefix; any match means you're not done.
+
 + Comments earn their place. Write one only where the code cannot be
 +   made to explain itself — a non-obvious constraint, a workaround and
 +   the cause it works around, a deliberate tradeoff. Never restate what
@@ -352,7 +385,9 @@ already ran from a clean tree independent of CI, is the green evidence here;
 skip straight to handling review comments, next.
 
 On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
-root cause, commit, push, watch again.
+root cause, commit, push, watch again. A check that fails intermittently
+gets looped to measure its failure rate before any ruling; that rate is the
+evidence in a fix or a handoff.
 
 Handle review comments under `superpowers:receiving-code-review` as they
 arrive — on cloud the run is auto-subscribed to the PR, so a comment wakes it
@@ -370,6 +405,10 @@ off). A later comment resumes it in the preserved worktree.
 `## Decisions` is exhaustive or the run is unreviewable — a human reviewing
 the PR sees the PR, not a ledger deleted at Finish.
 
+Everything the run publishes (PR body, comment replies, handoffs, log
+excerpts) carries `<REDACTED>` in place of any secret, token or credential.
+Quote only the log lines that carry the signal.
+
 ## Hard stops
 
 Stop and hand over for:
@@ -386,6 +425,7 @@ Stop and hand over for:
 - the PR's CI reaching round 5 still red
 - an integration conflict surviving one rebase round per side
 - `/implement <number>` where the issue cannot be fetched
+- a bug run where no repro command could be built, with what was tried
 
 This run's branch set is `$BRANCH` plus the `$BRANCH--w*` siblings the
 controller creates; merging a sibling into `$BRANCH` is authorized. Merging
