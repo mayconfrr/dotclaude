@@ -18,7 +18,7 @@ written — do not re-derive it, do not soften it.
 |---|---|---|
 | `superpowers:brainstorming` | Phase 1 | controller |
 | `superpowers:writing-plans` | Phase 2 | controller |
-| `superpowers:using-git-worktrees` | Phase 3 setup | controller |
+| `superpowers:using-git-worktrees` | end of Phase 0 | controller |
 | `superpowers:subagent-driven-development` | Phase 3 | controller |
 | `superpowers:dispatching-parallel-agents` | Phase 3 waves, parallel reviews, parallel investigation | controller |
 | `superpowers:test-driven-development` | inside every task | implementer, via dispatch prompt |
@@ -50,7 +50,8 @@ A bare number is a GitHub issue. `/implement 384` →
 request, comments are context. Carry the number to the PR body. If `gh` cannot
 fetch it, stop and ask.
 
-Run resume-detection first, then read the entry point off the filesystem.
+Run resume-detection first, then read the entry point off the filesystem,
+inside `.worktrees/$BRANCH` too when it exists.
 
 | Found | Enter at |
 |---|---|
@@ -60,6 +61,20 @@ Run resume-detection first, then read the entry point off the filesystem.
 | Bug report: a `bug` label, or the request names a symptom | Phase 1, diagnose |
 | Neither; the flow being changed already exists here | Phase 1, bounded |
 | Neither; new subsystem | Phase 1, architectural |
+
+Resolve the base branch, then create the worktree without asking. Every
+later phase, Phase 1 included, works inside it:
+
+```bash
+git fetch origin --prune
+for b in staging main master; do
+  git show-ref -q --verify "refs/remotes/origin/$b" && { BASE="origin/$b"; break; }
+done
+git worktree add ".worktrees/$BRANCH" -b "$BRANCH" "$BASE"
+```
+
+Reuse `$BASE` for the final review's merge base and the PR target. Report which
+one resolved.
 
 ## Phase 1 — Design
 
@@ -91,12 +106,16 @@ turns it green.
 
 Rank 3–5 hypotheses, each stated as a prediction ("if X is the cause,
 changing Y makes it vanish"), and test them in rank order, one variable per
-probe. The survivor is the Ruling; each eliminated one fills its
-alternatives field. The minimised repro becomes task 1's RED test, and the
-fix then plans as bounded or architectural.
+probe. Revert each probe before the next (`git checkout -- .`). Tag probe
+logs `[DEBUG-diagnose]`; grep them out before writing the Ruling. The
+survivor is the Ruling; each eliminated one fills its alternatives field.
+The minimised repro becomes task 1's RED test, and the fix then plans as
+bounded or architectural.
 
-If no seam exercises the bug's real call pattern, write no shallow stand-in
-test; the missing seam is a Ruling and an architecture note in `## Decisions`.
+If no seam (a public interface its test drives; see `Seams:`, Phase 2)
+exercises the bug's real call pattern, write no shallow stand-in test; the
+missing seam is a Ruling and an architecture note in `## Decisions`, and
+building it becomes task 1, with the repro as its RED test.
 
 ## Phase 2 — Plan
 
@@ -131,18 +150,8 @@ regardless of which SDD line shape triggered it:
 
 This layers onto SDD's ledger line; it isn't a change to SDD itself.
 
-Resolve the base branch, then create the worktree without asking:
-
-```bash
-git fetch origin --prune
-for b in staging main master; do
-  git show-ref -q --verify "refs/remotes/origin/$b" && { BASE="origin/$b"; break; }
-done
-git worktree add ".worktrees/$BRANCH" -b "$BRANCH" "$BASE"
-```
-
-Reuse `$BASE` for the final review's merge base and the PR target. Report which
-one resolved.
+Work in `.worktrees/$BRANCH`; a resumed run that lacks it creates it as in
+Phase 0.
 
 A red baseline is a ruling, not a question. Unrelated to the change → work
 around it. Related → task zero.
@@ -384,9 +393,10 @@ already ran from a clean tree independent of CI, is the green evidence here;
 skip straight to handling review comments, next.
 
 On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
-root cause, commit, push, watch again. Loop an intermittent failure to
-measure its failure rate before any ruling; that rate is the evidence in a
-fix or a handoff.
+root cause, commit, push, watch again. Loop an intermittent failure 100×
+locally to measure its failure rate before any ruling; that rate is the
+evidence in a fix or a handoff. Only when it won't reproduce locally, rerun
+it on CI; those reruns don't count toward the round cap, only fixes do.
 
 Handle review comments under `superpowers:receiving-code-review` as they
 arrive — on cloud the run is auto-subscribed to the PR, so a comment wakes it
