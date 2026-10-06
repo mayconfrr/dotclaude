@@ -107,7 +107,7 @@ turns it green.
 Rank 3–5 hypotheses, each stated as a prediction ("if X is the cause,
 changing Y makes it vanish"), and test them in rank order, one variable per
 probe. Commit the repro first, then revert each probe before the next
-(`git checkout -- . && git clean -fd`). Tag probe
+(`git checkout -- . && git clean -fd -e pnpm-lock.yaml`). Tag probe
 logs `[DEBUG-diagnose]`; grep them out before writing the Ruling. The
 survivor is the Ruling; each eliminated one fills its alternatives field.
 The minimised repro becomes task 1's RED test, and the fix then plans as
