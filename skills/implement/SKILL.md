@@ -16,6 +16,7 @@ written — do not re-derive it, do not soften it.
 
 | Skill | When | Invoked by |
 |---|---|---|
+| `superpowers:using-superpowers` | first, before Phase 0 | controller |
 | `superpowers:brainstorming` | Phase 1 | controller |
 | `superpowers:writing-plans` | Phase 2 | controller |
 | `superpowers:using-git-worktrees` | end of Phase 0 | controller |
