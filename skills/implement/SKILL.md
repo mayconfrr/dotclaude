@@ -62,8 +62,8 @@ inside `.worktrees/$BRANCH` too when it exists.
 | Neither; the flow being changed already exists here | Phase 1, bounded |
 | Neither; new subsystem | Phase 1, architectural |
 
-Resolve the base branch, then create the worktree without asking. Every
-later phase, Phase 1 included, works inside it:
+Resolve the base branch, then create the worktree. Every later phase, Phase 1
+included, works inside it:
 
 ```bash
 git fetch origin --prune
@@ -396,7 +396,7 @@ On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
 root cause, commit, push, watch again. Loop an intermittent failure 100×
 locally to measure its failure rate before any ruling; that rate is the
 evidence in a fix or a handoff. Only when it won't reproduce locally, rerun
-it on CI; those reruns don't count toward the round cap, only fixes do.
+it on CI; those reruns don't count toward the CI round cap below, only fixes do.
 
 Handle review comments under `superpowers:receiving-code-review` as they
 arrive — on cloud the run is auto-subscribed to the PR, so a comment wakes it
