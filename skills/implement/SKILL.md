@@ -70,7 +70,7 @@ git fetch origin --prune
 for b in staging main master; do
   git show-ref -q --verify "refs/remotes/origin/$b" && { BASE="origin/$b"; break; }
 done
-git worktree add ".worktrees/$BRANCH" -b "$BRANCH" "$BASE"
+[ -d ".worktrees/$BRANCH" ] || git worktree add ".worktrees/$BRANCH" -b "$BRANCH" "$BASE"
 ```
 
 Reuse `$BASE` for the final review's merge base and the PR target. Report which
@@ -106,7 +106,8 @@ turns it green.
 
 Rank 3–5 hypotheses, each stated as a prediction ("if X is the cause,
 changing Y makes it vanish"), and test them in rank order, one variable per
-probe. Revert each probe before the next (`git checkout -- .`). Tag probe
+probe. Commit the repro first, then revert each probe before the next
+(`git checkout -- . && git clean -fd`). Tag probe
 logs `[DEBUG-diagnose]`; grep them out before writing the Ruling. The
 survivor is the Ruling; each eliminated one fills its alternatives field.
 The minimised repro becomes task 1's RED test, and the fix then plans as
@@ -454,7 +455,7 @@ oversight.**
 | "This test failure is obvious, I'll patch it" | Root cause first. `systematic-debugging` is named in the dispatch prompt for this moment. |
 | "This got big, I should check in before Phase 3" | Scope growth upgrades the path and gets a ruling. It buys no check-in. |
 | "The user would obviously want this merged" | The PR is authorized. The merge is not. |
-| "CI is flaky, re-run and move on" | A red check is a failure. Investigate it, or spend a round and say so in the handoff. |
+| "CI is flaky, re-run and move on" | A red check is a failure. Loop it locally; rerun on CI only if it won't reproduce, and say so in the handoff. |
 | "`## Decisions` is long, I'll summarize" | Summarizing is discarding. Exhaustive or it substitutes for nothing. |
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
 | "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
