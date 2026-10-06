@@ -36,7 +36,8 @@
     "superpowers@superpowers-marketplace": true,
     "impeccable@impeccable": true,
     "skill-creator@claude-plugins-official": true,
-    "diagram-design@diagram-design": true
+    "diagram-design@diagram-design": true,
+    "mattpocock-skills@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
