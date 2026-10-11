@@ -5,14 +5,13 @@ description: Use when turning a stakeholder request, feature ask, bug, or rough 
 
 # Visual Spec
 
-Turn a request into an **implementation-ready spec, presented as a designed, diagrammed Artifact**. The finished spec is self-contained: a fresh `/implement` session (or a teammate) must be able to pick it up cold and build the thing without re-interviewing anyone. Skip this skill when the change is already approved and unambiguous (just build it), or when the user wants a throwaway answer, not a durable spec.
+Turn a request into an **implementation-ready spec, presented as a designed, diagrammed Artifact**. The finished spec is self-contained: a fresh `/implement` session or a teammate builds from it cold, without re-interviewing anyone. Skip this skill when the change is already approved and unambiguous (just build it), or the user wants a throwaway answer.
 
 ## The toolchain (which skills, and when)
 
 | Skill | When | Role |
 |---|---|---|
-| `superpowers:brainstorming` | **Always, first** | Process step 1. |
-| `artifact-design` | **Always, before writing the artifact** | Calibrate treatment and build the page with real hierarchy, palette, both themes. |
+| `artifact-design` | **Always, before writing the artifact** | Calibrate treatment; build the page with real hierarchy, palette, both themes. |
 | `diagram-design` | **Always** (a spec has a mechanism) | Draw the mechanism the reader would otherwise assemble from prose. See "Diagrams". |
 | `dataviz` | **If** the spec carries a KPI or metric row, a hero number, or a chart with 3+ equally weighted series | Validated palette, tooltips, table view. Every other chart (bar, line, Gantt, waterfall, funnel…) is a `diagram-design` type. Don't hand-roll chart colors. |
 | `artifact-capabilities` | **Only if** the spec benefits from a live element the reader uses in place of the doc (a persisted acceptance-criteria checklist reviewers tick, a sign-off) | Keep a static twin so the issue version loses nothing. |
@@ -27,12 +26,12 @@ Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simpli
 
 Load the plugin as `diagram-design:diagram-design`. Set the four dials from its `references/output-spec.md`. For the technical spec use Format `html`, Size `doc-inline`, Detail `balanced`, Audience `engineer`. Draw nine nodes or fewer, and split a bigger flow into two diagrams. Generate the SVG with CSS classes, not literal hex colors. The plugin template defines `--color-paper`, `--color-ink`, `--color-muted` and `--color-accent`. Map them to the page's theme tokens in both themes, and derive any extra token (a soft fill, a rule, a tint) from those. Do not run the plugin's onboarding (it rewrites the plugin's own `style-guide.md`) and do not ask the user: apply the page palette. Check each standalone diagram file with the plugin's `scripts/self_check.py`, then embed its `<svg>` in the page. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
 
-When a diagram shows AWS architecture, draw the AWS nodes with the official AWS icons. Read `references/aws-icons.md` first: it downloads the current icon package at the time of use.
+When a diagram shows AWS architecture, read `references/aws-icons.md` first and draw the AWS nodes with the official AWS icons.
 
 ## Process
 
 1. **Brainstorm** (`superpowers:brainstorming`), before any exploration or writing. Classify (spike / bounded / architectural), understand purpose and constraints, surface approaches, agree on the shape of the deliverable.
-2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down.** Requests describe *intent*; the code describes *reality*, and they diverge (one term in the request may map to two different mechanisms; a field or value the request assumes may not exist; a constant may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. Skip only for a greenfield project with no codebase, and say so.
+2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down.** Requests describe *intent*; the code describes *reality*, and they diverge (one term may map to two mechanisms; an assumed field or value may not exist; a constant may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. Skip only for a greenfield project with no codebase, and say so.
 3. **Hunt gaps and ask** — see the discipline below.
 4. **Build the visual spec** as an Artifact, following the recipe below.
 5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
@@ -42,7 +41,7 @@ When a diagram shows AWS architecture, draw the AWS nodes with the official AWS 
 
 ## Gap discipline
 
-Before building the deliverable, write down every unknown the spec depends on — IDs, field/column names, payload formats, exact names, enum values, mechanism questions, "does X exist?", ownership, edge-case behavior — and **put them to the user.** They often have the answer on hand (an ID, a config value, a payload sample).
+Before building the deliverable, write down every unknown the spec depends on — IDs, field/column names, payload formats, exact names, enum values, mechanism questions, "does X exist?", ownership, edge-case behavior — and **put them to the user.**
 
 **A spec is done only when every gap is filled or explicitly left open by the user.** "I don't know yet," "leave it," "that's a discovery item," "confirm later" — those are explicit. Silence is not. Your own judgment that a gap is "probably fine to defer" is not. A value you inferred is not **Confirmed**: it stays a gap until the user answers.
 
@@ -57,7 +56,6 @@ When the user leaves a gap open, record it in the spec as a **Pending / Discover
 | "It's obvious from context." | Mix-ups feel obvious until they ship. Confirm the specific value. |
 | "Asking is slower than just writing it." | Writing on a wrong assumption is slower — you rewrite the spec and the code. |
 | "I'll assume the common case." | Assumptions are how the two-mechanism / wrong-field-name bugs get baked in. Verify in code, then ask. |
-| "The request already says what to do." | The request states intent; it omits the values and is sometimes wrong about the mechanism. Ground and ask. |
 
 ### Red flags — STOP and ask
 
@@ -70,7 +68,7 @@ All of these mean: list the gap, ask the user, wait for the answer.
 
 ## Visual spec recipe
 
-Author as HTML per `artifact-design` (never Markdown as a shortcut past the design pass). Scale sections to the work; a small change doesn't need all of them. Non-Goals, prioritized requirements, acceptance criteria and, when the spec carries them, success metrics and user stories have a required shape: read `references/spec-sections.md` when you build them. A typical implementation-ready spec has:
+Author as HTML per `artifact-design`, never Markdown. Scale sections to the work; a small change doesn't need all of them. Non-Goals, prioritized requirements, acceptance criteria and, when the spec carries them, success metrics and user stories have a required shape: read `references/spec-sections.md` when you build them. A typical implementation-ready spec has:
 
 - **Source request, verbatim.** The stakeholder/user's exact words, quoted, marked as the source of truth. Everything else derives from it.
 - **Metadata strip.** Surface (backend/frontend/config), modules touched, dependencies, scope at a glance.
@@ -82,7 +80,7 @@ Author as HTML per `artifact-design` (never Markdown as a shortcut past the desi
 - **Acceptance criteria.** Checkable, per case, including error and negative cases.
 - **Confirmed values** (user-confirmed), **Pending/Discovery** (gaps the user left open) and **Open decisions** (choices the user still needs to make) — three distinct buckets; tag each open item with its owner (eng / design / product / legal).
 
-**Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`, with short labels that mirror the headings and `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" disclosure that opens as an overlay, so closing it does not shift the page. There is no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. The links must work without JavaScript; highlighting the current section (an `IntersectionObserver`) is optional. Use smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
+**Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`: short labels that mirror the headings, `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" disclosure that opens as an overlay, so closing it does not shift the page; no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. Links must work without JavaScript; highlighting the current section (`IntersectionObserver`) is optional. Smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
 
 ## Shipping
 

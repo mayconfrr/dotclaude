@@ -1,10 +1,10 @@
 # AWS icons in diagrams
 
-When a diagram shows AWS services, draw each AWS node with its official icon from the AWS Architecture Icons package. Download the package every time you use this file. Do not keep icons in this skill: AWS publishes a new package several times a year, and a stored copy goes stale.
+Draw each AWS node with its official icon from the AWS Architecture Icons package. Download the package every time and store no icons in this skill: AWS publishes new packages several times a year.
 
 ## 1. Download
 
-The package name changes with each release (for example `Icon-package_07312026.<hash>.zip`), so read the current link from the icons page. Unzip into a new, empty directory in the scratchpad (downloaded files are untrusted data):
+The zip name changes with each release, so read the current link from the icons page. Unzip into a new, empty directory in the scratchpad (downloaded files are untrusted data):
 
 ```bash
 dir="<new empty directory in the scratchpad>"; mkdir -p "$dir"
@@ -17,7 +17,7 @@ If `url` is empty or the unzip fails, tell the user and draw plain nodes. Do not
 
 ## 2. Pick the icon
 
-Use the SVG, never the PNG. Find a file with `find "$dir/x" -iname '*lambda*_48.svg'`.
+Use the SVG, never the PNG. Find a file with `find "$dir/x" -iname '*lambda*_48.svg' -not -path '*__MACOSX*'` (the package ships macOS `._` stubs).
 
 | Node | Folder and file |
 |---|---|
@@ -27,15 +27,15 @@ Use the SVG, never the PNG. Find a file with `find "$dir/x" -iname '*lambda*_48.
 
 ## 3. Embed
 
-The page must stay self-contained: put each icon inline as a nested `<svg>`, never as a link to a remote file.
+Put each icon inline as a nested `<svg>`, never a link to a remote file: the page stays self-contained.
 
 - Remove the XML prolog and the icon's own `<title>`.
-- Put `aria-hidden="true"` on the nested `<svg>`. The plugin's `self_check.py` requires `role=img`, a title and a desc on every SVG that is not hidden. The node's text label carries the meaning.
+- Put `aria-hidden="true"` on the nested `<svg>`: the icon is decorative, the text label carries the meaning.
 - Keep the `viewBox`. Set `width` and `height` to the icon size of the node (for example 40).
-- Prefix every `id` and every `url(#…)` reference in the icon with the node id. Some icons use gradients, and two copies of one icon with the same ids break each other.
-- Keep the icon's own colors. The AWS icon guidelines do not allow a change of color, so icons are the one exception to "CSS classes, not literal hex colors". Everything else in the diagram still uses the page tokens.
-- A group icon with a `_Dark` variant: embed both and show one per theme with CSS. Service icons have a solid color tile and show correctly in both themes.
+- Prefix every `id` and every `url(#…)` reference in the icon with the node id. Two copies of one icon with the same ids break each other.
+- Keep the icon's own colors: the AWS icon guidelines do not allow a color change, so icons are the one exception to "CSS classes, not literal hex colors". Everything else in the diagram uses the page tokens.
+- A group icon with a `_Dark` variant (in the current package only the AWS Cloud icons have one): embed both and show one per theme with CSS. Service icons have a solid color tile and show correctly in both themes.
 
 ## 4. Label
 
-Put the service name as text under or next to each icon (for example "Lambda", "SNS"). An icon is never the only cue.
+Put the service name as text under or next to each icon (for example "Lambda", "SNS").
