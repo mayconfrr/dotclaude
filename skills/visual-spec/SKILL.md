@@ -27,6 +27,8 @@ Write the first pass of the spec and of the stakeholder PDF in ASD-STE100 Simpli
 
 Load the plugin as `diagram-design:diagram-design`. Set the four dials from its `references/output-spec.md`. For the technical spec use Format `html`, Size `doc-inline`, Detail `balanced`, Audience `engineer`. Draw nine nodes or fewer, and split a bigger flow into two diagrams. Generate the SVG with CSS classes, not literal hex colors. The plugin template defines `--color-paper`, `--color-ink`, `--color-muted` and `--color-accent`. Map them to the page's theme tokens in both themes, and derive any extra token (a soft fill, a rule, a tint) from those. Do not run the plugin's onboarding (it rewrites the plugin's own `style-guide.md`) and do not ask the user: apply the page palette. Check each standalone diagram file with the plugin's `scripts/self_check.py`, then embed its `<svg>` in the page. If the plugin is missing, say so and draw the diagram by hand as inline SVG.
 
+When a diagram shows AWS architecture, draw the AWS nodes with the official AWS icons. Read `references/aws-icons.md` first: it downloads the current icon package at the time of use.
+
 ## Process
 
 1. **Brainstorm** (`superpowers:brainstorming`), before any exploration or writing. Classify (spike / bounded / architectural), understand purpose and constraints, surface approaches, agree on the shape of the deliverable.
