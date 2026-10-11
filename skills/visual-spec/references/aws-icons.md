@@ -34,7 +34,7 @@ Put each icon inline as a nested `<svg>`, never a link to a remote file: the pag
 - Keep the `viewBox`. Set `width` and `height` to the icon size of the node (for example 40).
 - Prefix every `id` and every `url(#…)` reference in the icon with the node id. Two copies of one icon with the same ids break each other.
 - Keep the icon's own colors: the AWS icon guidelines do not allow a color change, so icons are the one exception to "CSS classes, not literal hex colors". Everything else in the diagram uses the page tokens.
-- A group icon with a `_Dark` variant (in the current package only the AWS Cloud icons have one): embed both and show one per theme with CSS. Service icons have a solid color tile and show correctly in both themes.
+- An icon with light and dark variants (the AWS Cloud group icons as `_32` and `_32_Dark`; the general icons such as Users, Internet and Chat under `Res_General-Icons/Res_48_Light` and `Res_48_Dark`): embed both and show one per theme with CSS. Service icons have a solid color tile and show correctly in both themes.
 
 ## 4. Label
 
