@@ -38,9 +38,7 @@ written — do not re-derive it, do not soften it.
 Keep a todo list for the whole run: one entry per phase, one per plan task
 once Phase 2 produces them, one per Phase 4 review round, one for the Phase
 4.5 full-suite gate, one for the Phase 5 PR-monitoring loop. Update it as
-each completes rather than batching updates at the end — it is the run's
-visible state, and a resumed or interrupted run reads it before reading
-anything else.
+each completes, not in a batch at the end.
 
 ## Phase 0 — Resolve the request
 
@@ -138,19 +136,16 @@ nothing references it.
 ## Phase 3 — Execute
 
 `subagent-driven-development` ledgers its own rulings in three shapes:
-`Ruling: <what you decided> — <why> — <what it costs if wrong>`; a round-cap
+`Ruling: <what you decided> — <why> — <what it costs if wrong>`; an
 adjudication, `Task <N>: Ruling: <finding> — <what you decided and why>`; and
-a round-cap park, `Task <N>: parked — <finding> — Ruling: <why the code
-stands>`. None carries a distinct alternatives field, and neither round-cap
-shape carries a distinct cost-if-wrong field either. Write each, in Phase 3,
-in the full shape instead — same four elements as Phase 1's format,
-regardless of which SDD line shape triggered it:
+a park, `Task <N>: parked — <finding> — Ruling: <why the code stands>`. None
+carries a distinct alternatives field, and neither the adjudication nor the
+park carries a distinct cost-if-wrong field. In Phase 3 write each in the
+full shape instead — Phase 1's four elements, whichever SDD shape triggered it:
 
 ```
 <what you decided> — <alternatives considered, and why each lost> — <why this one> — <what it costs if wrong>
 ```
-
-This layers onto SDD's ledger line; it isn't a change to SDD itself.
 
 Work in `.worktrees/$BRANCH`; a resumed run that lacks it creates it as in
 Phase 0.
@@ -185,6 +180,42 @@ not only `code-review` calls. This overrides
 `subagent-driven-development`'s review-tier guidance. Implementers keep
 that skill's model selection.
 
+### Review loops
+
+Every review loop in the run — each task's, the whole-branch one, after
+`security-review`, after `simplify` — repeats one fix dispatch plus one
+scoped re-review until a review or re-review reports zero Critical and zero
+Important findings. That is the only exit; no round count ends a loop. This
+overrides `subagent-driven-development`'s five-round cap and its breaker for
+review findings.
+
+Keep SDD's escalation: rounds 1–3 resume the implementer, round 4 onward a
+fresh implementer on a more capable model. Ledger each round as
+`<prefix>: fix round <R> (…)` — no `/5` — where `<prefix>` is `Task <N>`, or
+outside the task loop `Phase 4`, `security-review` or `simplify`.
+
+Fix minor findings and nitpicks too when the fix is applicable and correct: a
+real defect or rule breach confirmed against the code, within the change's
+scope, not reopening a ruling. Batch them into that round's fix dispatch; a
+round with only minors or nitpicks gets one fix dispatch of its own,
+re-verified by the next scoped re-review or gate, not a new loop. Any other
+minor or nitpick (conflicts with a ruling, lacks evidence, out of scope, or
+taste the code's conventions don't back) is ledgered as
+`<prefix>: minor (not fixed) — <finding> — <reason>` and never re-enters the
+loop.
+
+A Critical or Important finding leaves a loop unfixed only by a ruling whose
+text carries the full shape above:
+
+- **Rejected:** the implementer pushed back under `receiving-code-review`
+  and the technical reason holds against the code →
+  `<prefix>: rejected — <severity> <finding> — Ruling: <technical reason>`.
+  The reason must stand on the code, never on how many rounds have run.
+- **Not converging:** the same finding comes back NOT ADDRESSED twice from
+  an implementer already on the most capable available model → rule on it
+  as SDD's breaker does (park it, or rule the smallest change that unblocks
+  dependent work). Stop only when every path forward is a guess.
+
 ### Isolate a parallel wave
 
 Serial tasks keep the one worktree. A wave of 2+ gets one worktree per task,
@@ -211,9 +242,7 @@ branch ref instead; keep that ref until the run closes.
 Each worktree keeps its own build output: never shared, never hand-deleted.
 Each also needs its own dependency install — a missing one can block a
 commit that needs a pre-commit hook — and never symlinked or junctioned in
-from another worktree: that's a documented breakage risk for some
-dependency resolvers, and hand-deleting build output mid-run corrupts
-incremental build state.
+from another worktree (breaks some dependency resolvers).
 
 If the project has a `package.json` with a `package-lock.json` or
 `yarn.lock`, install per worktree with `pnpm` instead — it reads the same
@@ -322,22 +351,13 @@ mid-task.
 
 ## Phase 4 — Whole-branch review
 
-Give the whole-branch review the task loop's shape — up to **5 rounds**, each
-one fix dispatch plus one scoped re-review.
+Run the whole-branch review as a review loop (Phase 3, Review loops), each
+fix dispatch carrying the complete findings list; this overrides SDD's single
+fix wave.
 
-At round 5 with findings still open, hand over, carrying the open findings
-verbatim, what each round attempted, every ruling made in the run, and the
-branch state.
-
-Two consecutive clean rounds close this phase; one alone isn't enough
-evidence.
-
-Once closed: invoke `security-review`, adjudicate its findings with the same
-fix-then-reverify discipline as the rounds above, then invoke `simplify`,
-then one more `code-review` round on what `simplify` touched. A finding
-there opens its own fix-then-review loop, capped at **3 rounds** — separate
-from the budget above, since a cleanup pass has a narrower footprint to
-re-check. At round 3 with findings still open, hand over the same way.
+Once closed: invoke `security-review`, then `simplify`, then one more
+`code-review` round on what `simplify` touched. Each one's findings go
+through the same loop.
 
 ## Phase 4.5 — Full-suite gate
 
@@ -374,6 +394,13 @@ decided, the alternatives considered and why each was passed over, why you
 picked this one, what it costs if wrong. A mechanical step with no real
 alternative doesn't belong here; a genuine judgment call does, whether or not
 it turned out to matter.
+
+The body also carries a `## Findings not fixed` section: every review
+finding, from any phase, that did not end fixed in code (`minor (not fixed)`
+lines, rejections, parks, out-of-scope findings). Each entry gets its
+severity, file:line or area, a one-line description, and the ledgered reason
+it stayed. Build it from the ledger before Finish deletes it. None → say
+"None".
 
 The PR stays a draft — promoting it to ready-for-review is the human's call,
 never the run's.
@@ -413,8 +440,8 @@ off). A later comment resumes it in the preserved worktree.
 
 ### Close out
 
-`## Decisions` is exhaustive or the run is unreviewable — a human reviewing
-the PR sees the PR, not a ledger deleted at Finish.
+`## Decisions` and `## Findings not fixed` are exhaustive: a human reviewer
+sees the PR, not the ledger.
 
 In everything the run publishes (PR body, comment replies, handoffs, log
 excerpts), replace any secret, token or credential with `<REDACTED>`. Quote
@@ -429,8 +456,6 @@ Stop and hand over for:
 - a side effect outside the worktree, except pushing this feature branch and
   opening its PR
 - a plan defect where every path forward is a guess
-- the whole-branch fix loop reaching round 5 with findings open
-- the post-`simplify` fix loop reaching round 3 with findings open
 - the Phase 4.5 full suite(s) still red after root-causing it, rather than
   opening or finishing the PR on a red suite
 - the PR's CI reaching round 5 still red
@@ -458,6 +483,8 @@ oversight.**
 | "The user would obviously want this merged" | The PR is authorized. The merge is not. |
 | "CI is flaky, re-run and move on" | A red check is a failure. Loop it locally; rerun on CI only if it won't reproduce, and say so in the handoff. |
 | "`## Decisions` is long, I'll summarize" | Summarizing is discarding. Exhaustive or it substitutes for nothing. |
+| "Five rounds and still open — time to stop and hand over" | Review loops have no round cap. Escalate the model; a finding that still won't converge gets a ruling, not a handoff. |
+| "That finding is in the ledger, that's enough" | The ledger dies at Finish. Every unfixed finding goes in `## Findings not fixed`. |
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
 | "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
 | "Both halves passed review, so the merge is a formality" | Independent reviews say nothing about the seam. Judge the merge itself, same as any other change. |
