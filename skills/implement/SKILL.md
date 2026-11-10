@@ -27,8 +27,9 @@ written — do not re-derive it, do not soften it.
 | `superpowers:verification-before-completion` | before every claim | both |
 | `code-review` (bundled; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
-| `security-review` | end of Phase 4, before `simplify` | controller |
-| `simplify` | end of Phase 4, after `security-review` | controller |
+| `simplify` | end of Phase 4 | controller |
+| `security-review` | Phase 6, the run's last step | controller |
+| Lazy senior review (subagent, `references/lazy-senior-review.md`) | Phase 6, in parallel with `security-review` | controller |
 | `superpowers:finishing-a-development-branch` | Phase 5 | controller |
 | `superpowers:executing-plans` | never | — |
 | `superpowers:writing-skills` | never | — |
@@ -47,7 +48,7 @@ Ask nothing.
 A bare number is a GitHub issue. `/implement 384` →
 `gh issue view 384 --json title,body,labels,comments`. The issue body is the
 request, comments are context. Carry the number to the PR body. If `gh` cannot
-fetch it, stop and ask.
+fetch it, stop and hand over (Hard stops).
 
 Run resume-detection first, then read the entry point off the filesystem,
 inside `.worktrees/$BRANCH` too when it exists.
@@ -135,20 +136,14 @@ nothing references it.
 
 ## Phase 3 — Execute
 
-`subagent-driven-development` ledgers its own rulings in three shapes:
-`Ruling: <what you decided> — <why> — <what it costs if wrong>`; an
-adjudication, `Task <N>: Ruling: <finding> — <what you decided and why>`; and
-a park, `Task <N>: parked — <finding> — Ruling: <why the code stands>`. None
-carries a distinct alternatives field, and neither the adjudication nor the
-park carries a distinct cost-if-wrong field. In Phase 3 write each in the
-full shape instead — Phase 1's four elements, whichever SDD shape triggered it:
+`subagent-driven-development` ledgers rulings in three shapes (plain ruling,
+`Task <N>: Ruling: …` adjudication, `Task <N>: parked — …`), none with an
+alternatives field; the last two lack cost-if-wrong too. In Phase 3 write each
+in Phase 1's full four-element shape, whichever SDD shape triggered it:
 
 ```
 <what you decided> — <alternatives considered, and why each lost> — <why this one> — <what it costs if wrong>
 ```
-
-Work in `.worktrees/$BRANCH`; a resumed run that lacks it creates it as in
-Phase 0.
 
 A red baseline is a ruling, not a question. Unrelated to the change → work
 around it. Related → task zero.
@@ -162,10 +157,9 @@ wave only when all five hold; fail one and they stay serial:
    migrations, an ordered migration index file, barrel exports, CI config.
 4. Neither is the plan's first task.
 5. Neither carries an integration test that touches a local database — a
-   per-process instance narrows this, not closes it; a shared process
-   can leak state through paths a database name never touches (a static
-   field, a cache, a registry). Serial unless a passing repeat run
-   proves otherwise; a design argument doesn't.
+   per-process instance narrows this, not closes it: a shared process
+   can leak state through a static field, cache or registry. Serial unless
+   a passing repeat run proves otherwise; a design argument doesn't.
 
 Wave cap 4. Implementers commit explicit paths only; `git add -A` is forbidden.
 
@@ -182,8 +176,9 @@ that skill's model selection.
 
 ### Review loops
 
-Every review loop in the run — each task's, the whole-branch one, after
-`security-review`, after `simplify` — repeats one fix dispatch plus one
+Every review loop in the run (each task's, the whole-branch one, the one
+after `simplify`, and the Phase 6 loop for `security-review` and the lazy senior
+review) repeats one fix dispatch plus one
 scoped re-review until a review or re-review reports zero Critical and zero
 Important findings. That is the only exit; no round count ends a loop. This
 overrides `subagent-driven-development`'s five-round cap and its breaker for
@@ -192,7 +187,7 @@ review findings.
 Keep SDD's escalation: rounds 1–3 resume the implementer, round 4 onward a
 fresh implementer on a more capable model. Ledger each round as
 `<prefix>: fix round <R> (…)` — no `/5` — where `<prefix>` is `Task <N>`, or
-outside the task loop `Phase 4`, `security-review` or `simplify`.
+outside the task loop `Phase 4`, `simplify` or `security-review`.
 
 Fix minor findings and nitpicks too when the fix is applicable and correct: a
 real defect or rule breach confirmed against the code, within the change's
@@ -239,9 +234,9 @@ Each dispatch gets its worktree path and `$WAVE_BASE`. Its review range is
 anything the other sibling also touched. Read a landed task's range from its
 branch ref instead; keep that ref until the run closes.
 
-Each worktree keeps its own build output: never shared, never hand-deleted.
-Each also needs its own dependency install — a missing one can block a
-commit that needs a pre-commit hook — and never symlinked or junctioned in
+Each worktree keeps its own build output (hand-deletion: see Red flags) and
+its own dependency install — a missing one can block a commit that needs a
+pre-commit hook. Never share either, nor symlink or junction dependencies in
 from another worktree (breaks some dependency resolvers).
 
 If the project has a `package.json` with a `package-lock.json` or
@@ -251,8 +246,7 @@ If the project has a `package.json` with a `package-lock.json` or
 package manager. Verify once per stack — pnpm's non-hoisted `node_modules`
 can break a build that relies on npm's phantom dependencies. On that
 failure, install with the project's own package manager per worktree and
-rule on it. No such files: this doesn't apply, install however the project
-already does.
+rule on it.
 
 Suite-wide numbers count only where `git status --short` is empty. A shared
 worktree's wave reports scoped evidence only; the controller verifies the
@@ -286,9 +280,7 @@ check covering that file on a clean tree after.
 
 Abort and re-dispatch instead: a conflict needing either side's intent.
 Re-dispatch the implementer who wrote that side, to rebase its worktree and
-re-verify — never a fresh agent, and never a dedicated integration subagent;
-neither holds the context, and both would author unreviewed code in a
-worktree they don't own.
+re-verify — never a fresh agent or a dedicated integration subagent.
 
 ### Amend the dispatch prompt
 
@@ -319,22 +311,19 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 +   the cause it works around, a deliberate tradeoff. Never restate what
 +   the line already says.
 
-+ A new dependency in this task's diff is checked before it's installed,
-+   not after — a malicious postinstall script has already run by the
-+   time review catches it. Look at the package before adding it; skip
-+   or flag anything that looks wrong rather than installing and
-+   reporting it later.
++ Check a new dependency before installing it, not after — a malicious
++   postinstall script has already run by the time review catches it.
++   Skip or flag anything that looks wrong.
 
 + Write for the failure case, not just the happy one: parameterize or
 +   validate anything reaching a query, shell call, or template rather
 +   than interpolating it, and read secrets from environment or a secret
-+   store, never as a literal. Review catches what slips through here —
-+   write as if nothing will.
++   store, never as a literal.
 
-+ A pattern-driven rewrite across multiple call sites — updating every
-+   caller of a changed signature, a repo-wide codemod — goes through
-+   ast-grep (structural match, dry-run before applying), not a manual
-+   find/replace that can silently mismatch or miss a site.
++ A pattern-driven rewrite across multiple call sites — every caller of
++   a changed signature, a repo-wide codemod — goes through ast-grep
++   (structural match, dry-run first), not a manual find/replace that can
++   silently mismatch or miss a site.
 ```
 
 And in every fix-round message:
@@ -355,22 +344,23 @@ Run the whole-branch review as a review loop (Phase 3, Review loops), each
 fix dispatch carrying the complete findings list; this overrides SDD's single
 fix wave.
 
-Once closed: invoke `security-review`, then `simplify`, then one more
-`code-review` round on what `simplify` touched. Each one's findings go
-through the same loop.
+Once closed, run `simplify` in rounds. Each round reviews the branch diff,
+fixes the findings that hold and ledgers every skipped one with its reason.
+Pass each new round the earlier rounds' skips and rulings so it does not
+raise them again. Stop at the first round that returns no findings, or
+whose findings are all skipped. Then run one more `code-review` round on
+what `simplify` touched. Its findings go through the same loop.
 
 ## Phase 4.5 — Full-suite gate
 
 The implementation is not finished until every automated test suite the
-change spans passes in full, run the way the project runs them for a full
-build (the commands its CI, build file, or contributing docs use), from a
-clean tree. If the project splits suites by layer, service, or package, run
-every one the change touches, not just the one that changed. Read the
-actual output under `superpowers:verification-before-completion` — a suite
-you did not run is not a suite that passed.
-
-A project with no automated test suite has nothing to gate on here; don't
-invent one — note the absence and move on.
+change spans passes in full, run as the project runs a full build (the
+commands its CI, build file, or contributing docs use), from a clean tree.
+If suites are split by layer, service, or package, run every one the change
+touches. Read the actual output under
+`superpowers:verification-before-completion` — a suite you did not run is
+not a suite that passed. A project with no automated suite has nothing to
+gate on: note the absence and move on.
 
 This gate is independent of CI: required even when the PR's CI is disabled,
 unavailable, or out of budget. A failure here is Phase-3 work, not a
@@ -381,8 +371,7 @@ CI sort it out."
 
 ## Phase 5 — Finish and ship
 
-The base branch is already resolved — do not confirm it. Present no menu; the
-terminal state follows the remote.
+Present no menu; the terminal state follows the remote.
 
 **GitHub** (`gh repo view` succeeds, or `origin` matches github.com): take
 Option 2, but open the PR **as a draft** (`gh pr create --draft`, or
@@ -416,10 +405,8 @@ gh pr checks --watch
 ```
 
 A repo may gate CI on `draft == false`: no checks start until it's promoted,
-so `gh pr checks` reports none pending. That is expected, not a failure — do
-not promote the draft to force them. The Phase 4.5 full-suite gate, which
-already ran from a clean tree independent of CI, is the green evidence here;
-skip straight to handling review comments, next.
+so `gh pr checks` reports none pending. That is expected, not a failure. The
+Phase 4.5 gate is the green evidence here; skip to handling review comments.
 
 On red (checks that do run): invoke `superpowers:systematic-debugging`, fix the
 root cause, commit, push, watch again. Loop an intermittent failure 100×
@@ -435,8 +422,26 @@ thread, never at top level. Pushing a fix reruns the checks: watch them again.
 Red CI is capped at 5 rounds, then hand over with the failing job's log excerpt
 and what each round tried.
 
-The run ends when the checks are green (or the PR is a draft with CI gated
-off). A later comment resumes it in the preserved worktree.
+Once the checks are green (or the PR is a draft with CI gated off), go to
+Phase 6. A later comment resumes the run in the preserved worktree.
+
+## Phase 6 — Security review and lazy senior review (last)
+
+`security-review` runs last because it ends its turn with the report alone;
+anywhere earlier, that stops the run. In one response, first dispatch the lazy
+senior reviewer as a background subagent (`model: opus`,
+`run_in_background: true`; prompt in `references/lazy-senior-review.md`, sent
+verbatim with the branch, `$BASE` and worktree path filled in), then
+invoke `security-review` on the branch's diff against `$BASE` (if its
+injected git context shows another checkout, run its sub-tasks against the
+worktree and that range). The security report is the turn's final message.
+
+Findings from either review resume the run on the next turn: each goes
+through the review loop (prefix `security-review` or `lazy-senior-review`), then
+re-run the Phase 4.5 gate, push, watch the checks, and add each unfixed one
+to the PR body's `## Findings not fixed`. Do not re-run either review on its
+own fixes; the loop's scoped re-review covers them. A lazy senior finding that
+conflicts with a security finding loses.
 
 ### Close out
 
@@ -456,8 +461,7 @@ Stop and hand over for:
 - a side effect outside the worktree, except pushing this feature branch and
   opening its PR
 - a plan defect where every path forward is a guess
-- the Phase 4.5 full suite(s) still red after root-causing it, rather than
-  opening or finishing the PR on a red suite
+- the Phase 4.5 full suite(s) still red after root-causing it
 - the PR's CI reaching round 5 still red
 - an integration conflict surviving one rebase round per side
 - `/implement <number>` where the issue cannot be fetched
@@ -488,4 +492,4 @@ oversight.**
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
 | "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
 | "Both halves passed review, so the merge is a formality" | Independent reviews say nothing about the seam. Judge the merge itself, same as any other change. |
-| "I'll ask which base branch to use" | `origin/staging`, then `main`, then `master`. Report which resolved. |
+| "I'll ask which base branch to use" | Phase 0 resolves it. Don't ask. |
