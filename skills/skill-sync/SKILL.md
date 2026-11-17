@@ -27,7 +27,7 @@ Download with `gh`, never a browser, into the session scratchpad: the browser up
 
 Open `https://claude.ai/customize/skills/yours` in a new tab. The list has several sections; only the one holding skills you created is replaceable. Match each asset to a row by skill name, never by position: the list reorders by last update. Open a matched row: its URL becomes `.../customize/skills/yours/id/<skill_id>`. Note the skill's current version.
 
-Show a table of replacements, additions, and unmatched assets. Unmatched assets are reported, not added, unless the user named them as additions. Ask once before uploading, unless the user's request already names exactly what to replace and add. Replacing overwrites the live skill, even if the release is older.
+Skip the `skill-sync` asset itself, even when the user asks for everything: it drives `gh` and the local browser, so a copy on claude.ai can do nothing. List it as skipped. Show a table of replacements, additions, and unmatched assets. Unmatched assets are reported, not added, unless the user named them as additions. Ask once before uploading, unless the user's request already names exactly what to replace and add. Replacing overwrites the live skill, even if the release is older.
 
 ## 4. Replace each skill
 
