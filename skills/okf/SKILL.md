@@ -75,7 +75,9 @@ Prefer it when you want repo knowledge that ships in the repo.
    only inject reminders, never block, and the user can remove them via `/hooks`).
 
 6. **Install the curation skill (a baseline to adapt).** Copy the bundled
-   `assets/curating-docs/` into the target's `.claude/skills/curating-docs/`, so
+   `assets/curating-docs/SKILL.md.template` to the target's
+   `.claude/skills/curating-docs/SKILL.md` (the `.template` suffix keeps a second
+   `SKILL.md` out of this package, which claude.ai rejects), so
    the "what belongs / how to author a concept" judgment travels with the project
    and fires whenever someone documents something or is tempted to bury rationale
    in a comment. **It ships generic — treat it as a baseline and adapt it to this
