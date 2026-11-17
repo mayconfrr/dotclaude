@@ -12,6 +12,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | [`instruction-audit`](skills/instruction-audit/SKILL.md) | Audits a skill (its SKILL.md and every file in its folder tree), CLAUDE.md/AGENTS.md, or hook instruction text for anything that isn't load-bearing — development narration, redundant restatement, verbose phrasing — verifies its facts, duplicates, and contradictions, and compacts what survives. Its optional reminder hook also fires on edits to any file inside a skill folder. |
 | [`okf`](skills/okf/SKILL.md) | Introduces [Open Knowledge Format](https://github.com/GoogleCloudPlatform/open-knowledge-format) to a project — scaffolds a `docs/` knowledge bundle, authors the base concepts, wires the freshness hooks (the `Stop` nudge fires once per distinct working-tree change, not every turn), and installs a curation skill — giving agents durable repo knowledge that ships in git. |
 | [`skill-sync`](skills/skill-sync/SKILL.md) | Downloads the `.skill` assets of a GitHub release and replaces the same-named custom skills on claude.ai through the browser — skill IDs discovered at runtime, one confirmation before anything is uploaded, unmatched assets reported rather than created. |
+| [`slack-watch`](skills/slack-watch/SKILL.md) | Watches the Slack channels and DMs you name, on a schedule and only inside your hours, and answers for you while you're away: researches the repos you allow, replies where the question was asked, fixes code as a draft PR, and holds destructive actions (delete, force-push, merge to the default branch, deploy) for you — with a phone push only when something can't wait. One file per watch in `~/.claude/slack-watch/`; `setup`, `list`, `resume`, `stop`, `now`. |
 | [`visual-spec`](skills/visual-spec/SKILL.md) | Turns a stakeholder request, feature ask, or bug into an implementation-ready spec — grounded in the real codebase, gaps hunted and confirmed with the user, presented as a designed, diagrammed Artifact (AWS architecture drawn with the official AWS icons, downloaded at the time of use so they never go stale) — then opened as a GitHub issue on approval, plus a stakeholder PDF summary when the change has a non-technical audience. Both documents are written in ASD-STE100 Simplified Technical English. |
 
 ## Prerequisites
@@ -23,6 +24,7 @@ config — kept here so they can be versioned, shared, and pulled onto any machi
 | `instruction-audit` | None required; uses `skill-creator`'s `quick_validate.py` if that plugin is installed, but works without it. |
 | `okf` | None required — scaffolds plain markdown and wires Claude Code hooks, both built in. Network access to fetch the OKF spec is helpful but not essential. |
 | `skill-sync` | The [`gh`](https://cli.github.com/) CLI and the Claude in Chrome extension, signed in to claude.ai in that browser. |
+| `slack-watch` | Claude Code (it schedules runs with `CronCreate`, which lives only in the session and expires after 7 days; `/slack-watch resume <name>` rebuilds them) and a Slack connector. Phone pushes need Remote Control connected. A `write` repo also needs `git` and the [`gh`](https://cli.github.com/) CLI. |
 | `visual-spec` | The `artifact-design`, `artifact-capabilities`, and `dataviz` skills, which ship bundled with Claude Code, the [`diagram-design`](https://github.com/cathrynlavery/diagram-design) plugin (`claude plugin marketplace add cathrynlavery/diagram-design`, then `claude plugin install diagram-design@diagram-design`), plus `brainstorming` from the [`superpowers`](https://github.com/obra/superpowers-marketplace) plugin marketplace. AWS diagrams also need `curl`, `unzip` and network access to aws.amazon.com. |
 
 ## Using a skill
@@ -37,6 +39,11 @@ The repo is rooted directly at `~/.claude/` behind a deny-by-default
 state, caches, and credentials stay out (none of those are, or ever will be, in
 this repo). The allow-listed personal-setup files are `CLAUDE.md` and
 `settings.json`.
+
+`slack-watch` keeps each watch's settings and state in
+`~/.claude/slack-watch/<name>.md`. The deny-by-default `.gitignore` already
+keeps that folder out: the state changes on every run and holds Slack ids and
+message excerpts.
 
 **`settings.json` runs with `permissions.defaultMode: "bypassPermissions"`** —
 every tool call executes with no confirmation prompt. That's a deliberate
