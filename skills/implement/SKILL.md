@@ -28,8 +28,9 @@ written — do not re-derive it, do not soften it.
 | `code-review` (bundled; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
 | `simplify` | end of Phase 4 | controller |
-| `security-review` | Phase 6, the run's last step | controller |
+| `security-review` | Phase 6 | controller |
 | Lazy senior review (subagent, `references/lazy-senior-review.md`) | Phase 6, in parallel with `security-review` | controller |
+| Fable review (subagent, `references/fable-review.md`) | Phase 7 | controller |
 | `superpowers:finishing-a-development-branch` | Phase 5 | controller |
 | `superpowers:executing-plans` | never | — |
 | `superpowers:writing-skills` | never | — |
@@ -168,17 +169,17 @@ this phase — each task's review and the final whole-branch review — runs
 through `code-review` against that task's or that branch's diff; none of
 them use a bespoke reviewer prompt.
 
-Every review dispatch, in any phase, runs on Opus (`model: opus`) —
-including reviewers dispatched inside `security-review` and `simplify`,
-not only `code-review` calls. This overrides
+Every review dispatch, in any phase except the Phase 7 Fable review, runs on
+Opus (`model: opus`) — including reviewers dispatched inside `security-review`
+and `simplify`, not only `code-review` calls. This overrides
 `subagent-driven-development`'s review-tier guidance. Implementers keep
 that skill's model selection.
 
 ### Review loops
 
 Every review loop in the run (each task's, the whole-branch one, the one
-after `simplify`, and the Phase 6 loop for `security-review` and the lazy senior
-review) repeats one fix dispatch plus one
+after `simplify`, the Phase 6 loop for `security-review` and the lazy senior
+review, the Phase 7 Fable loop) repeats one fix dispatch plus one
 scoped re-review until a review or re-review reports zero Critical and zero
 Important findings. That is the only exit; no round count ends a loop. This
 overrides `subagent-driven-development`'s five-round cap and its breaker for
@@ -187,7 +188,8 @@ review findings.
 Keep SDD's escalation: rounds 1–3 resume the implementer, round 4 onward a
 fresh implementer on a more capable model. Ledger each round as
 `<prefix>: fix round <R> (…)` — no `/5` — where `<prefix>` is `Task <N>`, or
-outside the task loop `Phase 4`, `simplify` or `security-review`.
+outside the task loop `Phase 4`, `simplify`, `security-review`,
+`lazy-senior-review` or `fable-review`.
 
 Fix minor findings and nitpicks too when the fix is applicable and correct: a
 real defect or rule breach confirmed against the code, within the change's
@@ -425,23 +427,36 @@ and what each round tried.
 Once the checks are green (or the PR is a draft with CI gated off), go to
 Phase 6. A later comment resumes the run in the preserved worktree.
 
-## Phase 6 — Security review and lazy senior review (last)
+## Phase 6 — Security review and lazy senior review
 
-`security-review` runs last because it ends its turn with the report alone;
-anywhere earlier, that stops the run. In one response, first dispatch the lazy
+`security-review` ends its turn with the report alone, so invoke it last in its
+turn; calls after it never run. In one response, first dispatch the lazy
 senior reviewer as a background subagent (`model: opus`,
 `run_in_background: true`; prompt in `references/lazy-senior-review.md`, sent
 verbatim with the branch, `$BASE` and worktree path filled in), then
 invoke `security-review` on the branch's diff against `$BASE` (if its
 injected git context shows another checkout, run its sub-tasks against the
-worktree and that range). The security report is the turn's final message.
+worktree and that range).
 
-Findings from either review resume the run on the next turn: each goes
-through the review loop (prefix `security-review` or `lazy-senior-review`), then
-re-run the Phase 4.5 gate, push, watch the checks, and add each unfixed one
-to the PR body's `## Findings not fixed`. Do not re-run either review on its
-own fixes; the loop's scoped re-review covers them. A lazy senior finding that
-conflicts with a security finding loses.
+The lazy reviewer's completion notice resumes the run on the next turn. Each
+finding from either review goes through the review loop (prefix
+`security-review` or `lazy-senior-review`), then re-run the Phase 4.5 gate,
+push, watch the checks, and add each unfixed one to the PR body's
+`## Findings not fixed`. Do not re-run either review on its own fixes; the
+loop's scoped re-review covers them. A security finding wins over any
+conflicting lazy senior or Fable finding. With no findings, or once both loops
+close, go to Phase 7.
+
+## Phase 7 — Fable review
+
+Once, after every other loop closes, dispatch one reviewer subagent on
+`model: fable` with the prompt in `references/fable-review.md`, placeholders
+filled in. It reviews only the branch's final state, for what every earlier
+round missed; the PR body tells it what the rounds already settled (with no
+PR, paste the ledger's rulings and not-fixed lines instead). Its findings go through the review loop
+(prefix `fable-review`; scoped re-reviews run through `code-review` on Opus,
+not Fable), then Phase 6's gate, push, checks and `## Findings not fixed`
+steps. The run ends when that loop closes.
 
 ### Close out
 
