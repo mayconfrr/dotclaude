@@ -34,10 +34,11 @@ When a diagram shows AWS architecture, read `references/aws-icons.md` first and 
 2. **Ground it in the real codebase.** Explore the actual modules and quote `file:line`. **Verify mechanisms in code before you write them down.** Requests describe *intent*; the code describes *reality*, and they diverge (one term may map to two mechanisms; an assumed field or value may not exist; a constant may have drifted from its source of truth). Dispatch a search agent for breadth when the surface is large. Skip only for a greenfield project with no codebase, and say so.
 3. **Hunt gaps and ask** — see the discipline below.
 4. **Build the visual spec** as an Artifact, following the recipe below.
-5. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
-6. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
-7. **Stakeholder companion (on approval, when there's an audience for it).** If the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **stakeholder-facing PDF summary** per `references/stakeholder-companion.md` (read it now). Hand over the PDF file path together with the spec link. For an internal-only change, skip this.
-8. **Open the GitHub issue** — see Shipping.
+5. **Lazy review rounds**, before the user sees the spec. Dispatch a read-only lazy senior reviewer subagent (`model: opus`) with `references/lazy-spec-review.md` sent verbatim, placeholders filled. Cut or shrink what each Critical or Important finding names, republish, then send the next round the earlier rounds' rulings so it does not raise them again. Stop at the first round with zero Critical and zero Important findings; no round count ends the loop. A finding that would cut something the request asks for, or that rests on a wrong reading of the code, is rejected with that reason as its ruling. Fix a Minor when it is correct and in scope; otherwise drop it. Run the rounds again after a feedback round that adds scope. When presenting the spec, say in one line what the rounds removed.
+6. **Review loop.** Send the link, take feedback, **republish to the same URL** as facts firm up.
+7. **Get explicit approval.** Nothing ships until the user approves the spec. Present the artifact and wait for a clear yes — a sub-question answered or "looks good so far" is not approval of the whole spec.
+8. **Stakeholder companion (on approval, when there's an audience for it).** If the change has a non-implementer audience — product, operations, a sponsor who needs to weigh in — produce a **stakeholder-facing PDF summary** per `references/stakeholder-companion.md` (read it now). Hand over the PDF file path together with the spec link. For an internal-only change, skip this.
+9. **Open the GitHub issue** — see Shipping.
 
 ## Gap discipline
 
