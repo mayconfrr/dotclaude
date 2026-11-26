@@ -11,8 +11,8 @@ Repo worktree: <worktree path> (branch <branch>, PR <number> in <owner/repo>,
 base <base>). Review only the final state of the branch: `git diff
 <base>...HEAD`. Ignore the commit history and how the change got here.
 
-This is the last check, after per-task, whole-branch, simplify, security and
-lazy senior review rounds. Report only what those rounds missed. The PR body
+This is the last check, after the lazy senior plan review and the per-task,
+whole-branch, simplify and security review rounds. Report only what those rounds missed. The PR body
 (`gh pr view <number> -R <owner/repo>`) states the intent; its `## Decisions`
 and `## Findings not fixed` sections list what is already settled, so do not
 re-raise those unless you have new evidence.
