@@ -28,8 +28,8 @@ written — do not re-derive it, do not soften it.
 | `code-review` (bundled; never `mattpocock-skills:code-review`) | Phases 3 and 4 | controller |
 | `superpowers:receiving-code-review` | every fix round; every PR review comment | implementer via fix-round message; controller on the PR |
 | `simplify` | end of Phase 4 | controller |
-| `security-review` | Phase 6 | controller |
-| Lazy senior review (subagent, `references/lazy-senior-review.md`) | Phase 6, in parallel with `security-review` | controller |
+| `security-review` | Phase 6, inside a foreground subagent | controller |
+| Lazy senior review (subagent, `references/lazy-senior-review.md`) | end of Phase 2, on the plan | controller |
 | Fable review (subagent, `references/fable-review.md`) | Phase 7 | controller |
 | `superpowers:finishing-a-development-branch` | Phase 5 | controller |
 | `superpowers:executing-plans` | never | — |
@@ -37,10 +37,9 @@ written — do not re-derive it, do not soften it.
 
 ## Track work
 
-Keep a todo list for the whole run: one entry per phase, one per plan task
-once Phase 2 produces them, one per Phase 4 review round, one for the Phase
-4.5 full-suite gate, one for the Phase 5 PR-monitoring loop. Update it as
-each completes, not in a batch at the end.
+Keep a todo list for the whole run: one entry per phase (4.5 included), one
+per plan task once Phase 2 produces them, one per Phase 4 review round.
+Update it as each completes, not in a batch at the end.
 
 ## Phase 0 — Resolve the request
 
@@ -57,7 +56,7 @@ inside `.worktrees/$BRANCH` too when it exists.
 | Found | Enter at |
 |---|---|
 | SDD ledger whose first line names this plan | Phase 3, resume at first task with no `complete` line |
-| Plan in `docs/superpowers/plans/` | Phase 3 |
+| Plan in `docs/superpowers/plans/`, no SDD ledger | end of Phase 2, lazy senior review of the plan |
 | Spec, no plan | Phase 2 |
 | Bug report: a `bug` label, or the request names a symptom | Phase 1, diagnose |
 | Neither; the flow being changed already exists here | Phase 1, bounded |
@@ -135,16 +134,26 @@ callers plans the expand step and the contract step as two lines, not one —
 introduce the new form, migrate callers, remove the old form only once
 nothing references it.
 
+### Lazy senior review of the plan
+
+Before Phase 3, dispatch the lazy senior reviewer as a foreground subagent
+(`model: opus`; prompt in `references/lazy-senior-review.md`, sent verbatim
+with the plan path, the spec path or "none", and the worktree path filled in).
+Cutting a task from the plan is cheaper than reviewing, fixing and deleting
+its code later, so the review happens here and not on the final diff.
+
+Its findings go through the review loop (prefix `lazy-senior-review`), with
+the controller revising the plan in place of an implementer fix dispatch (so
+no escalation) and the same reviewer re-reviewing the revised plan. Each adopted finding that
+drops or merges a task, or rejects a design choice, is a ruling in the
+ledger. Commit the revised plan, then go to Phase 3.
+
 ## Phase 3 — Execute
 
 `subagent-driven-development` ledgers rulings in three shapes (plain ruling,
 `Task <N>: Ruling: …` adjudication, `Task <N>: parked — …`), none with an
 alternatives field; the last two lack cost-if-wrong too. In Phase 3 write each
-in Phase 1's full four-element shape, whichever SDD shape triggered it:
-
-```
-<what you decided> — <alternatives considered, and why each lost> — <why this one> — <what it costs if wrong>
-```
+in Phase 1's full four-element `Ruling:` shape, whichever SDD shape triggered it.
 
 A red baseline is a ruling, not a question. Unrelated to the change → work
 around it. Related → task zero.
@@ -177,9 +186,9 @@ that skill's model selection.
 
 ### Review loops
 
-Every review loop in the run (each task's, the whole-branch one, the one
-after `simplify`, the Phase 6 loop for `security-review` and the lazy senior
-review, the Phase 7 Fable loop) repeats one fix dispatch plus one
+Every review loop in the run (the lazy senior review of the plan, each
+task's, the whole-branch one, the one after `simplify`, the Phase 6 loop for
+`security-review`, the Phase 7 Fable loop) repeats one fix dispatch plus one
 scoped re-review until a review or re-review reports zero Critical and zero
 Important findings. That is the only exit; no round count ends a loop. This
 overrides `subagent-driven-development`'s five-round cap and its breaker for
@@ -197,7 +206,7 @@ scope, not reopening a ruling. Batch them into that round's fix dispatch; a
 round with only minors or nitpicks gets one fix dispatch of its own,
 re-verified by the next scoped re-review or gate, not a new loop. Any other
 minor or nitpick (conflicts with a ruling, lacks evidence, out of scope, or
-taste the code's conventions don't back) is ledgered as
+taste the conventions don't back) is ledgered as
 `<prefix>: minor (not fixed) — <finding> — <reason>` and never re-enters the
 loop.
 
@@ -380,9 +389,8 @@ Option 2, but open the PR **as a draft** (`gh pr create --draft`, or
 `gh pr ready --undo` if the forge tooling opened it ready). The PR base is
 `${BASE#origin/}`. From an issue run, the body closes it (`Closes #384`). The
 body carries a `## Decisions` section: every ruling, from any phase, where more
-than one viable option existed and you picked one without asking — what you
-decided, the alternatives considered and why each was passed over, why you
-picked this one, what it costs if wrong. A mechanical step with no real
+than one viable option existed and you picked one without asking, in the
+Ruling's four elements. A mechanical step with no real
 alternative doesn't belong here; a genuine judgment call does, whether or not
 it turned out to matter.
 
@@ -427,25 +435,20 @@ and what each round tried.
 Once the checks are green (or the PR is a draft with CI gated off), go to
 Phase 6. A later comment resumes the run in the preserved worktree.
 
-## Phase 6 — Security review and lazy senior review
+## Phase 6 — Security review
 
-`security-review` ends its turn with the report alone, so invoke it last in its
-turn; calls after it never run. In one response, first dispatch the lazy
-senior reviewer as a background subagent (`model: opus`,
-`run_in_background: true`; prompt in `references/lazy-senior-review.md`, sent
-verbatim with the branch, `$BASE` and worktree path filled in), then
-invoke `security-review` on the branch's diff against `$BASE` (if its
-injected git context shows another checkout, run its sub-tasks against the
-worktree and that range).
+`security-review` ends its turn with the report alone, so the controller
+never invokes it directly: nothing would resume the run afterwards. Dispatch
+a foreground subagent (`model: opus`) that invokes `security-review` on the
+branch's diff against `$BASE`, running its sub-tasks on Opus against the
+worktree and that range, and returns the report verbatim.
 
-The lazy reviewer's completion notice resumes the run on the next turn. Each
-finding from either review goes through the review loop (prefix
-`security-review` or `lazy-senior-review`), then re-run the Phase 4.5 gate,
-push, watch the checks, and add each unfixed one to the PR body's
-`## Findings not fixed`. Do not re-run either review on its own fixes; the
-loop's scoped re-review covers them. A security finding wins over any
-conflicting lazy senior or Fable finding. With no findings, or once both loops
-close, go to Phase 7.
+Each finding goes through the review loop (prefix `security-review`), then
+re-run the Phase 4.5 gate, push, watch the checks, add each ruling to the PR
+body's `## Decisions` and each unfixed finding to `## Findings not fixed`. Do not re-run the review on its own
+fixes; the loop's scoped re-review covers them. A security finding wins over
+any conflicting Fable finding or earlier lazy-senior ruling. With no
+findings, or once the loop closes, go to Phase 7.
 
 ## Phase 7 — Fable review
 
@@ -455,8 +458,7 @@ filled in. It reviews only the branch's final state, for what every earlier
 round missed; the PR body tells it what the rounds already settled (with no
 PR, paste the ledger's rulings and not-fixed lines instead). Its findings go through the review loop
 (prefix `fable-review`; scoped re-reviews run through `code-review` on Opus,
-not Fable), then Phase 6's gate, push, checks and `## Findings not fixed`
-steps. The run ends when that loop closes.
+not Fable), then Phase 6's gate, push, checks and PR-body steps. The run ends when that loop closes.
 
 ### Close out
 
