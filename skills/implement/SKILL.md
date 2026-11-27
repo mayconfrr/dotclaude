@@ -314,6 +314,13 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 +   independent source (a literal, a worked example, the spec), never
 +   recomputed the way the code computes them.
 
++ Write each test as a Gherkin scenario: the name states the scenario
++   ("Scenario: lead with an open deal gets a duplicate"), the body is
++   three blocks in order, Given, When, Then, each opened by a
++   `// Given …` / `// When …` / `// Then …` line in domain words. Where
++   the repo bans code comments, carry the same words in helper names
++   (`givenLeadHasOpenDeal()`) instead. Every Then block asserts.
+
 + Prefix every temporary debug log with [DEBUG-<task>]. Before your
 +   status line, grep for the prefix; any match means you're not done.
 
