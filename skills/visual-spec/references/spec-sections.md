@@ -30,7 +30,6 @@ Checkable, per case. Two formats — pick per criterion:
 
 **Given / When / Then** — for behavior with a precondition:
 - Given [precondition/context] · When [user action] · Then [expected outcome]
-- e.g. Given SSO is configured for the org · When a member opens the login page · Then the system redirects the member to the org's SSO provider.
 
 **Checklist** — for a set of discrete, independently-true facts:
 - [ ] Admin can enter the SSO provider URL in org settings
@@ -43,15 +42,16 @@ Rules:
 
 ## Gates
 
-A section of the document, not a file: the behavior to implement, worded like a Gherkin feature so a reader sees each gate the change must pass. Show it as a `gherkin` code block in the page and copy it into the issue as is.
+A page section, not a file: the behavior to implement, worded like a Gherkin feature so a reader sees each gate the change must pass. Show it as a `gherkin` code block in the page and copy it into the issue as is.
 
 - One `Scenario` per gate; `Scenario Outline` + `Examples` when only the values change; `Background` for shared preconditions.
 - Domain words the reader knows, real values from the spec, no UI selectors, endpoints or class names in the steps.
-- Same STE rules as the criteria; tag each scenario with its priority (`@P0`).
+- Same STE rules as the criteria; tag each scenario with its priority.
 - When every acceptance criterion is a scenario here, this section replaces the criteria list.
 
 ```gherkin
 Feature: SSO login
+  @P0
   Scenario: Member is sent to the org's SSO provider
     Given SSO is configured for the org
     When a member opens the login page
@@ -73,5 +73,5 @@ has none — don't manufacture one.
 Skip for a single-mechanism technical change. Use when the change serves distinct personas, or in the
 companion. Format: "As a [specific user type], I want [capability] so that [benefit]" — the type
 specific ("enterprise admin", not "user"), the capability a goal not a UI widget, the benefit the why.
-Order by priority; include error/empty/boundary states. Also avoid stories that are too large or internally framed ("we want to
+Order by priority; include error/empty/boundary states. Avoid stories that are too large or internally framed ("we want to
 refactor the DB" is a task, not a story).
