@@ -69,7 +69,7 @@ All of these mean: list the gap, ask the user, wait for the answer.
 
 ## Visual spec recipe
 
-Author as HTML per `artifact-design`, never Markdown. Scale sections to the work; a small change doesn't need all of them. Non-Goals, prioritized requirements, acceptance criteria and, when the spec carries them, success metrics and user stories have a required shape: read `references/spec-sections.md` when you build them. A typical implementation-ready spec has:
+Author as HTML per `artifact-design`, never Markdown. Scale sections to the work; a small change doesn't need all of them. Non-Goals, prioritized requirements, acceptance criteria, Gates and, when the spec carries them, success metrics and user stories have a required shape: read `references/spec-sections.md` when you build them. A typical implementation-ready spec has:
 
 - **Source request, verbatim.** The stakeholder/user's exact words, quoted, marked as the source of truth. Everything else derives from it.
 - **Metadata strip.** Surface (backend/frontend/config), modules touched, dependencies, scope at a glance.
@@ -79,9 +79,10 @@ Author as HTML per `artifact-design`, never Markdown. Scale sections to the work
 - **Non-Goals.** The boundary that keeps scope from creeping.
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).
 - **Acceptance criteria.** Checkable, per case, including error and negative cases.
+- **Gates.** The behavior to implement, worded as Gherkin scenarios in a page section (not a file). Replaces the criteria when every criterion is a scenario.
 - **Confirmed values** (user-confirmed), **Pending/Discovery** (gaps the user left open) and **Open decisions** (choices the user still needs to make) — three distinct buckets; tag each open item with its owner (eng / design / product / legal).
 
-**Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`: short labels that mirror the headings, `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" disclosure that opens as an overlay, so closing it does not shift the page; no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. Links must work without JavaScript; highlighting the current section (`IntersectionObserver`) is optional. Smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
+**Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`: short labels that mirror the headings, `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" overlay disclosure, so closing it does not shift the page; no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. Links must work without JavaScript; highlighting the current section (`IntersectionObserver`) is optional. Smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
 
 ## Shipping
 
