@@ -319,7 +319,10 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 +   three blocks in order, Given, When, Then, each opened by a
 +   `// Given …` / `// When …` / `// Then …` line in domain words. Where
 +   the repo bans code comments, carry the same words in helper names
-+   (`givenLeadHasOpenDeal()`) instead. Every Then block asserts.
++   (`givenLeadHasOpenDeal()`) instead. Where the repo uses BDD-style
++   APIs (BDDMockito `given`, AssertJ BDDAssertions `then`), use them
++   and never their classic twins (`when`, `assertThat`). Every Then
++   block asserts.
 
 + Prefix every temporary debug log with [DEBUG-<task>]. Before your
 +   status line, grep for the prefix; any match means you're not done.
