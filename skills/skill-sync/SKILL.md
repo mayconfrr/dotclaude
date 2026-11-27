@@ -7,7 +7,7 @@ description: Use when `.skill` packages published as GitHub release assets shoul
 
 Hand the user a release's `.skill` files, ready to upload on claude.ai. Each asset's file name (minus `.skill`) is the skill name.
 
-Never drive the upload with browser automation: browser extensions refuse claude.ai's Settings and Customize pages under any setting, so the upload click is the user's. Open pages and folders with the operating system's own launcher instead.
+Never drive the upload with browser automation: browser extensions refuse claude.ai's Settings and Customize pages, so the upload click is the user's.
 
 **Prerequisite:** `gh` authenticated.
 
@@ -25,7 +25,7 @@ One `--pattern` per skill the user named; `'*.skill'` only when they asked for a
 
 ## 3. Open the folder and the page
 
-Open both with the OS launcher, not a browser tool:
+Open both with the OS launcher:
 
 | OS | Folder | Page |
 |---|---|---|

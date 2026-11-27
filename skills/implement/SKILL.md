@@ -139,8 +139,6 @@ nothing references it.
 Before Phase 3, dispatch the lazy senior reviewer as a foreground subagent
 (`model: opus`; prompt in `references/lazy-senior-review.md`, sent verbatim
 with the plan path, the spec path or "none", and the worktree path filled in).
-Cutting a task from the plan is cheaper than reviewing, fixing and deleting
-its code later, so the review happens here and not on the final diff.
 
 Its findings go through the review loop (prefix `lazy-senior-review`), with
 the controller revising the plan in place of an implementer fix dispatch (so
@@ -173,10 +171,9 @@ wave only when all five hold; fail one and they stay serial:
 
 Wave cap 4. Implementers commit explicit paths only; `git add -A` is forbidden.
 
-Dispatch a wave's task reviews in one response. Every review dispatch in
-this phase — each task's review and the final whole-branch review — runs
-through `code-review` against that task's or that branch's diff; none of
-them use a bespoke reviewer prompt.
+Dispatch a wave's task reviews in one response. Each task review and the
+Phase 4 whole-branch review run through `code-review` against that task's or
+that branch's diff, never a bespoke reviewer prompt.
 
 Every review dispatch, in any phase except the Phase 7 Fable review, runs on
 Opus (`model: opus`) — including reviewers dispatched inside `security-review`
@@ -316,24 +313,24 @@ self-discover no skills. Amend `implementer-prompt.md` at dispatch:
 
 + Write each test as a Gherkin scenario: the name states the scenario
 +   ("Scenario: lead with an open deal gets a duplicate"), the body is
-+   three blocks in order, Given, When, Then, each opened by a
-+   `// Given …` / `// When …` / `// Then …` line in domain words. Where
-+   the repo bans code comments, carry the same words in helper names
-+   (`givenLeadHasOpenDeal()`) instead. Where the repo uses BDD-style
-+   APIs (BDDMockito `given`, AssertJ BDDAssertions `then`), use them
-+   and never their classic twins (`when`, `assertThat`). Every Then
-+   block asserts.
++   three blocks in order, Given, When, Then, each opened by a comment
++   line in domain words (`// Given …`, in the language's comment
++   syntax). Where the repo bans code comments, carry the same words in
++   helper names (`givenLeadHasOpenDeal()`) instead. Where the repo uses
++   BDD-style APIs (BDDMockito `given`, AssertJ BDDAssertions `then`),
++   use them, never their classic twins (`when`, `assertThat`). Every
++   Then block asserts.
 
 + Prefix every temporary debug log with [DEBUG-<task>]. Before your
 +   status line, grep for the prefix; any match means you're not done.
 
-+ Comments earn their place. Write one only where the code cannot be
-+   made to explain itself — a non-obvious constraint, a workaround and
-+   the cause it works around, a deliberate tradeoff. Never restate what
-+   the line already says.
++ Beyond the Given/When/Then lines, comments earn their place. Write
++   one only where the code cannot be made to explain itself — a
++   non-obvious constraint, a workaround and the cause it works around,
++   a deliberate tradeoff. Never restate what the line already says.
 
 + Check a new dependency before installing it, not after — a malicious
-+   postinstall script has already run by the time review catches it.
++   install script has already run by the time review catches it.
 +   Skip or flag anything that looks wrong.
 
 + Write for the failure case, not just the happy one: parameterize or
@@ -519,4 +516,3 @@ oversight.**
 | "Waves are faster, I'll batch these two anyway" | All five conditions or serial. A collided wave costs more than it saved. |
 | "Build output looks stale, I'll delete it" | Hand-deleting it corrupts incremental state and manufactures confusing errors that look like real bugs. Clean via the project's own build tool, or leave it. |
 | "Both halves passed review, so the merge is a formality" | Independent reviews say nothing about the seam. Judge the merge itself, same as any other change. |
-| "I'll ask which base branch to use" | Phase 0 resolves it. Don't ask. |
