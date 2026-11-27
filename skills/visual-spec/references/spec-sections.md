@@ -41,6 +41,23 @@ Rules:
 - Specify behavior, not implementation. Each criterion independently testable.
 - Ban ambiguous words — "fast", "user-friendly", "intuitive" — define them concretely or cut them.
 
+## Gates (`.feature`)
+
+The acceptance criteria rewritten as one Gherkin feature file, shown in a code block with its file name (`<area>/<change>.feature`) and copied into the issue as is. It is the spec's executable contract: the implementer saves it, binds its steps and keeps it green.
+
+- One `Scenario` per criterion; `Scenario Outline` + `Examples` when only the values change; `Background` for shared preconditions.
+- Domain words the reader knows, real values from the spec, no UI selectors, endpoints or class names in the steps.
+- Same STE rules as the criteria; tag each scenario with its priority (`@P0`).
+- The criteria list stays when the reviewer needs it; when every criterion is in the file, the file replaces the list.
+
+```gherkin
+Feature: SSO login
+  Scenario: Member is sent to the org's SSO provider
+    Given SSO is configured for the org
+    When a member opens the login page
+    Then the member is redirected to the org's SSO provider
+```
+
 ## Success metrics (when the spec carries them)
 
 Only when the change has a measurable outcome the reader will track; a pure mechanism change often

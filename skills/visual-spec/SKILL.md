@@ -79,6 +79,7 @@ Author as HTML per `artifact-design`, never Markdown. Scale sections to the work
 - **Non-Goals.** The boundary that keeps scope from creeping.
 - **Config / code shapes.** Concrete blocks with real names and values (not placeholders).
 - **Acceptance criteria.** Checkable, per case, including error and negative cases.
+- **Gates (`.feature`).** The acceptance criteria as one Cucumber feature file: what gets implemented and what `/implement` must turn green.
 - **Confirmed values** (user-confirmed), **Pending/Discovery** (gaps the user left open) and **Open decisions** (choices the user still needs to make) — three distinct buckets; tag each open item with its owner (eng / design / product / legal).
 
 **Section sidebar.** Unless the spec has three sections or fewer, give the page a sidebar of plain anchor links to each section `id`: short labels that mirror the headings, `scroll-margin-top` on the element that carries the `id`. It is sticky on wide screens. At phone width it collapses to a sticky "On this page" disclosure that opens as an overlay, so closing it does not shift the page; no horizontal scroll. Use two nav blocks if the disclosure cannot stay open on wide screens without JavaScript. Links must work without JavaScript; highlighting the current section (`IntersectionObserver`) is optional. Smooth scrolling only under `prefers-reduced-motion: no-preference`. The GitHub issue has no sidebar.
